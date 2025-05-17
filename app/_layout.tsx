@@ -2,7 +2,6 @@ import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
 export default function RootLayout() {
@@ -17,12 +16,16 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
+      <Stack initialRouteName="intro">
+        <Stack.Screen 
+          name="intro" 
+          options={{ headerShown: false }} // hide header for splash
+        />
         <Stack.Screen 
           name="(tabs)" 
           options={{ 
-            headerShown: true, // Ensure the header is shown
-            title: 'EYE App'  // Set the title for the header here
+            headerShown: true,
+            title: 'EYE App',
           }} 
         />
         <Stack.Screen name="+not-found" />

@@ -1,12 +1,18 @@
-// app/UploadScreen.tsx
-import React, { useState } from 'react';
-import { View, Text, Button, Image, StyleSheet, ActivityIndicator, Alert } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
+
 import axios from 'axios';
+import * as ImagePicker from 'expo-image-picker';
+import React, { useState } from 'react';
+import { ActivityIndicator, Alert, Button, Image, StyleSheet, Text, View } from 'react-native';
 
 export default function UploadScreen() {
   const [imageUri, setImageUri] = useState<string | null>(null);
-  const [result, setResult] = useState<{ prediction: string, confidence: number } | null>(null);
+  const [result, setResult] = useState<{
+    model: string;
+    name: string;
+    predicted_class: number;
+    accuracy: string;
+    remedy: string;
+  } | null>(null);
   const [loading, setLoading] = useState(false);
 
   const pickImage = async () => {
@@ -39,13 +45,18 @@ export default function UploadScreen() {
     } as any);
 
     try {
-      const response = await axios.post('https://<your-ngrok-url>/predict/', formData, {
+      const response = await axios.post('https://eyebackend.onrender.com/predict', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
 
-      setResult(response.data);
+      // backend sends { result: [ {...} ] }
+      if (response.data.result && response.data.result.length > 0) {
+        setResult(response.data.result[0]);
+      } else {
+        Alert.alert('Error', 'No prediction result found');
+      }
     } catch (error) {
       console.error(error);
       Alert.alert('Error', 'Failed to upload image');
@@ -72,8 +83,11 @@ export default function UploadScreen() {
 
       {result && (
         <View style={styles.resultBox}>
-          <Text style={styles.resultText}>Prediction: {result.prediction}</Text>
-          <Text style={styles.resultText}>Confidence: {(result.confidence * 100).toFixed(2)}%</Text>
+          <Text style={styles.resultText}>Model: {result.model}</Text>
+          <Text style={styles.resultText}>Prediction: {result.name}</Text>
+          <Text style={styles.resultText}>Class ID: {result.predicted_class}</Text>
+          <Text style={styles.resultText}>Confidence: {result.accuracy}</Text>
+          <Text style={styles.resultText}>Remedy: {result.remedy}</Text>
         </View>
       )}
     </View>

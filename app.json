@@ -1,27 +1,30 @@
 {
   "expo": {
-    "name": "eye",
+    "name": "DRUSHTI",
     "slug": "eye",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/eyeand.png",
     "scheme": "eye",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "foregroundImage": "./assets/images/eyeios.png",
+      "backgroundColor": "#3a8dde"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/images/eyeand.png",
+        "backgroundColor": "#3a8dde"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.meghana2002.eye"
     },
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/eyeweb.png"
     },
     "plugins": [
       "expo-router",
@@ -37,6 +40,12 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "b3cd9ab1-0fcf-4773-8d2f-101e82c78a7c"
+      }
     }
   }
 }
