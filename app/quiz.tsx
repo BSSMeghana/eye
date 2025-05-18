@@ -1,46 +1,48 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import quizStyles from './styles/quizStyles';
 
 const eyeQuestions: string[] = [
   "Do you feel pain or discomfort in or around your eyes?",
-  "Is there any discharge from your eye (watery, mucus, or pus)?",
-  "Is there any swelling of the eyelids or around the eye?",
-  "Do you have a family history of glaucoma or cataracts?",
-  "Are you sensitive to bright light (photophobia)?",
+  "Do you experience blurred vision?",
   "Do you have diabetes or high blood pressure?",
-  "Have you had any eye surgery or eye injury?",
-  "Do you feel itching or burning in your eyes?",
+  "Do you experience dry eyes frequently?",
 ];
 
 const options: string[] = ['Yes', 'No', 'Sometimes', 'Not Sure'];
 
 export default function QuizScreen() {
   const router = useRouter();
-
-  const [name, setName] = useState<string>('');
-  const [age, setAge] = useState<string>('');
-  const [profession, setProfession] = useState<string>('');
-  
-  // answers: key = question index, value = selected answer as string
+  const [name, setName] = useState('');
+  const [age, setAge] = useState('');
+  const [profession, setProfession] = useState('');
   const [answers, setAnswers] = useState<{ [key: number]: string }>({});
 
   const handleAnswer = (index: number, answer: string) => {
     setAnswers(prev => ({ ...prev, [index]: answer }));
   };
 
+  const isFormComplete =
+    name.trim() !== '' &&
+    age.trim() !== '' &&
+    profession.trim() !== '' &&
+    Object.keys(answers).length === eyeQuestions.length;
+
   const handleSubmit = () => {
-    if (!name.trim() || !age.trim() || !profession.trim()) {
-      Alert.alert("Please fill out your name, age, and profession.");
+    if (!isFormComplete) {
+      Alert.alert("Please fill out all fields and answer all questions.");
       return;
     }
-    if (Object.keys(answers).length !== eyeQuestions.length) {
-      Alert.alert("Please answer all the symptom questions.");
-      return;
-    }
-    Alert.alert("Quiz submitted!", `Thanks, ${name}. Your responses have been recorded.`);
-    // Reset form
+
+    Alert.alert(
+      "Success",
+      "Quiz submitted successfully!",
+      [{ text: "OK", onPress: () => router.replace('/') }],
+      { cancelable: false }
+    );
+
     setName('');
     setAge('');
     setProfession('');
@@ -48,65 +50,81 @@ export default function QuizScreen() {
   };
 
   return (
-  <ScrollView contentContainerStyle={quizStyles.container}>
-    <Text style={quizStyles.title}>Eye Health Quiz</Text>
+    <ScrollView contentContainerStyle={quizStyles.container}>
+      
 
-    <TextInput
-      style={quizStyles.input}
-      placeholder="Name"
-      placeholderTextColor="gray" 
-      value={name}
-      onChangeText={setName}
-    />
+      <Text style={quizStyles.title}>Welcome to DRUSHTI!</Text>
+      <Text style={quizStyles.title}>Eye Health Quiz</Text>
 
-    <TextInput
-      style={quizStyles.input}
-      placeholder="Age"
-      placeholderTextColor="gray" 
-      value={age}
-      onChangeText={setAge}
-      keyboardType="numeric"
-    />
+      <TextInput
+        style={quizStyles.input}
+        placeholder="Name"
+        placeholderTextColor="gray"
+        value={name}
+        onChangeText={setName}
+      />
+      <TextInput
+        style={quizStyles.input}
+        placeholder="Age"
+        placeholderTextColor="gray"
+        value={age}
+        onChangeText={setAge}
+        keyboardType="numeric"
+      />
+      <TextInput
+        style={quizStyles.input}
+        placeholder="Profession"
+        placeholderTextColor="gray"
+        value={profession}
+        onChangeText={setProfession}
+      />
 
-    <TextInput
-      style={quizStyles.input}
-      placeholder="Profession"
-      placeholderTextColor="gray" 
-      value={profession}
-      onChangeText={setProfession}
-    />
-
-    {eyeQuestions.map((question, i) => (
-      <View key={i} style={quizStyles.questionContainer}>
-        <Text style={quizStyles.questionText}>{question}</Text>
-        <View style={quizStyles.optionsRow}>
-          {options.map(option => {
-            const val = option.toLowerCase().replace(' ', '_');
-            const selected = answers[i] === val;
-            return (
-              <TouchableOpacity
-                key={option}
-                onPress={() => handleAnswer(i, val)}
-                style={[
-                  quizStyles.optionButton,
-                  selected && quizStyles.optionButtonSelected,
-                ]}
-              >
-                <Text style={[quizStyles.optionText, selected && quizStyles.optionTextSelected]}>
-                  {option}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
+      {eyeQuestions.map((question, i) => (
+        <View key={i} style={quizStyles.questionContainer}>
+          <Text style={quizStyles.questionText}>{question}</Text>
+          <View style={quizStyles.optionsRow}>
+            {options.map(option => {
+              const val = option.toLowerCase().replace(' ', '_');
+              const selected = answers[i] === val;
+              return (
+                <TouchableOpacity
+                  key={option}
+                  onPress={() => handleAnswer(i, val)}
+                  style={[
+                    quizStyles.optionButton,
+                    selected && quizStyles.optionButtonSelected,
+                  ]}
+                >
+                  <Text style={[quizStyles.optionText, selected && quizStyles.optionTextSelected]}>
+                    {option}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
         </View>
-      </View>
-    ))}
+      ))}
 
-    <TouchableOpacity style={quizStyles.submitButton} onPress={handleSubmit}>
-      <Text style={quizStyles.submitButtonText}>Submit Quiz</Text>
-    </TouchableOpacity>
-  </ScrollView>
-);
+      <TouchableOpacity
+        style={[quizStyles.submitButton, !isFormComplete && { backgroundColor: '#ccc' }]}
+        onPress={handleSubmit}
+        disabled={!isFormComplete}
+      >
+        <Text style={quizStyles.submitButtonText}>Submit Quiz</Text>
+      </TouchableOpacity>
 
+      <TouchableOpacity
+        style={[quizStyles.submitButton, { backgroundColor: '#4fa9f6', marginTop: 12 }]}
+        onPress={() => router.replace('/')}
+      >
+        <Text style={[quizStyles.submitButtonText, { color: 'white' }]}>Skip Quiz</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+  style={quizStyles.backButton}
+  onPress={() => router.replace('./Intro')}>
+  <Ionicons name="arrow-back" size={24} color="#007AFF" />
+</TouchableOpacity>
+    </ScrollView>
+  );
 }
-

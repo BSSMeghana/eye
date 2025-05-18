@@ -1,72 +1,75 @@
+// app/styles/quizStyles.ts
 import { StyleSheet } from 'react-native';
 
 const quizStyles = StyleSheet.create({
   container: {
-    padding: 20,
-    paddingBottom: 40,
-    backgroundColor: 'white',
+    padding: 16,
+    paddingBottom: 32,
+    backgroundColor: '#fff',
   },
   title: {
-    fontSize: 28,
-    fontWeight: '700',
-    marginBottom: 25,
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 16,
     textAlign: 'center',
+    color: '#3a8dde',
   },
   input: {
-  borderWidth: 1,
-  color: 'black',
-  borderColor: 'black',
-  backgroundColor: 'white',
-  borderRadius: 10,
-  paddingHorizontal: 15,
-  paddingVertical: 12,
-  marginBottom: 15,
-  fontSize: 16,
-},
-
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 12,
+  },
   questionContainer: {
-    marginBottom: 25,
+    marginBottom: 20,
   },
   questionText: {
-    fontSize: 18,
-    marginBottom: 10,
+    fontSize: 16,
+    marginBottom: 8,
   },
   optionsRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     flexWrap: 'wrap',
+    gap: 8,
   },
   optionButton: {
-    borderWidth: 1,
-    borderColor: '#1e90ff',
-    borderRadius: 8,
     paddingVertical: 8,
     paddingHorizontal: 12,
+    borderWidth: 1,
+    borderColor: '#888',
+    borderRadius: 6,
+    marginRight: 8,
     marginBottom: 8,
-    minWidth: '22%',
-    alignItems: 'center',
   },
   optionButtonSelected: {
-    backgroundColor: '#1e90ff',
+    backgroundColor: '#4fa9f6',
+    borderColor: '#007AFF',
   },
   optionText: {
-    color: '#1e90ff',
-    fontWeight: '600',
+    color: '#000',
   },
   optionTextSelected: {
     color: '#fff',
   },
   submitButton: {
-    backgroundColor: '#1e90ff',
-    paddingVertical: 15,
-    borderRadius: 12,
-    marginTop: 10,
+    backgroundColor: '#4fa9f6',
+    paddingVertical: 12,
+    borderRadius: 8,
     alignItems: 'center',
+    marginTop: 20,
   },
   submitButtonText: {
     color: '#fff',
-    fontSize: 20,
-    fontWeight: '700',
+    fontWeight: 'bold',
+    fontSize: 16,
   },
+   backButton: {
+    backgroundColor: '#f0f0f0',
+    marginBottom: 16,
+    paddingRight: 12,
+  },
+
 });
+
 export default quizStyles;

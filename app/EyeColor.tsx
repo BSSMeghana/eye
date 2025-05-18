@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 
 const colorPlates = [
-  require('/Users/meghanabss/Downloads/eye/assets/images/img1.png'),
-  require('/Users/meghanabss/Downloads/eye/assets/images/img2.jpg'),
-  require('/Users/meghanabss/Downloads/eye/assets/images/img3.jpg'),
-  require('/Users/meghanabss/Downloads/eye/assets/images/img4.jpg'),
-  require('/Users/meghanabss/Downloads/eye/assets/images/img5.webp'),
-  require('/Users/meghanabss/Downloads/eye/assets/images/img6.avif'),
-  require('/Users/meghanabss/Downloads/eye/assets/images/img7.webp'),
+  require('../assets/images/img1.png'),
+  require('../assets/images/img2.jpg'),
+  require('../assets/images/img3.jpg'),
+  require('../assets/images/img4.jpg'),
+  require('../assets/images/img5.webp'),
+  require('../assets/images/img6.avif'),
+  require('../assets/images/img7.webp'),
 ];
 
 const EyeColor: React.FC = () => {

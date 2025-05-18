@@ -1,10 +1,12 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, ScrollView, Image } from 'react-native';
+import 'react-native-reanimated';
+import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import indexStyles from './styles/indexStyles';
+import { Ionicons } from '@expo/vector-icons';
 
-type RoutePath = '/UploadScreen' | '/quiz' | '/EyeTestMenu' | '/EyeColor' | '/EyeGameMenu';
+type RoutePath = '/UploadScreen'  | '/EyeTestMenu' | '/EyeColor' | '/EyeGameMenu';
 
 const features: {
   key: string;
@@ -13,7 +15,6 @@ const features: {
   route: RoutePath;
 }[] = [
   { key: 'upload', label: 'Scan Eye', icon: 'eye-outline', route: '/UploadScreen' },
-  { key: 'quiz', label: 'Take Quiz', icon: 'help-circle-outline', route: '/quiz' },
   { key: 'vision', label: 'Vision Test', icon: 'eye-check-outline', route: '/EyeTestMenu' },
   { key: 'color', label: 'Color Test', icon: 'palette-outline', route: '/EyeColor' },
   { key: 'games', label: 'Eye Games', icon: 'gamepad-variant-outline', route: '/EyeGameMenu' },
@@ -25,12 +26,12 @@ export default function Home() {
   return (
     <ScrollView contentContainerStyle={indexStyles.container}>
 
+
       {/* Header */}
       <View style={indexStyles.header}>
         <Text style={indexStyles.title}>DRUSHTI</Text>
         <Text style={indexStyles.subtitle}>See the signs before they show!</Text>
       </View>
-
 
       {/* Features Grid */}
       <View style={indexStyles.cardContainer}>
@@ -49,10 +50,16 @@ export default function Home() {
 
       {/* Footer */}
       <View style={indexStyles.footerContainer}>
-  <Text style={indexStyles.footerText}>
-    Hackathon 2025 | Team Drushti </Text>
-</View>
-
+        <Text style={indexStyles.footerText}>
+          Hackathon 2025 | Team Drushti
+        </Text>
+      </View>
+ {/* Back button */}
+      <TouchableOpacity
+  style={indexStyles.backButton}
+  onPress={() => router.replace('/quiz')}>
+  <Ionicons name="arrow-back" size={24} color="#007AFF" />
+</TouchableOpacity>
     </ScrollView>
   );
 }

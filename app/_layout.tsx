@@ -16,19 +16,11 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack initialRouteName="intro">
-        <Stack.Screen 
-          name="intro" 
-          options={{ headerShown: false }} // hide header for splash
-        />
-        <Stack.Screen 
-          name="(tabs)" 
-          options={{ 
-            headerShown: true,
-            title: 'EYE App',
-          }} 
-        />
-        <Stack.Screen name="+not-found" />
+      <Stack initialRouteName="Intro">
+        <Stack.Screen name="Intro" options={{ headerShown: false }} />
+        <Stack.Screen name="index" options={{ headerShown: false }} />
+        <Stack.Screen name="quiz" options={{ headerShown: false }} />
+        {/* Other screens */}
       </Stack>
       <StatusBar style="auto" />
     </ThemeProvider>

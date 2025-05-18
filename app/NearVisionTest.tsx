@@ -2,14 +2,14 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
 const letterGroups = [
-  ['A', 'B', 'C', 'D'],
-  ['E', 'F', 'G', 'H'],
-  ['I', 'J', 'K', 'L'],
-  ['M', 'N', 'O', 'P'],
-  ['Q', 'R', 'S', 'T'],
-  ['U', 'V', 'W', 'X'],
-  ['Y', 'Z', 'A', 'B'],
-  ['C', 'D', 'E', 'F'],
+  ['P', 'G', 'H', 'D'],
+  ['I', 'K', 'G', 'E'],
+  ['U', 'S', 'Q', 'L'],
+  ['A', 'V', 'O', 'R'],
+  ['W', 'Y', 'P', 'Q'],
+  ['R', 'B', 'W', 'Z'],
+  ['M', 'Y', 'A', 'P'],
+  ['C', 'T', 'K', 'F'],
 ];
 
 const fontSizes = [48, 42, 36, 30, 24, 18, 14, 10]; // Decreasing font sizes for each page

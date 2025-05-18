@@ -11,7 +11,11 @@
     "ios": {
       "supportsTablet": true,
       "foregroundImage": "./assets/images/eyeios.png",
-      "backgroundColor": "#3a8dde"
+      "backgroundColor": "#3a8dde",
+      "bundleIdentifier": "com.meghana2002.eye",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {

@@ -89,6 +89,10 @@ const indexStyles = StyleSheet.create({
     fontSize: 17,
     color: '#444',
   },
+  backButton: {
+    backgroundColor: '#f0f0f0',
+    marginBottom: 16,
+  },
 });
 
 export default indexStyles;
