@@ -10,9 +10,11 @@ const quizStyles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 16,
+    marginBottom: 10,
     textAlign: 'center',
     color: '#3a8dde',
+    marginTop: 5,
+  
   },
   input: {
     borderWidth: 1,
@@ -22,7 +24,7 @@ const quizStyles = StyleSheet.create({
     marginBottom: 12,
   },
   questionContainer: {
-    marginBottom: 20,
+    marginBottom: 18,
   },
   questionText: {
     fontSize: 16,
@@ -57,7 +59,7 @@ const quizStyles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 8,
     alignItems: 'center',
-    marginTop: 20,
+    marginTop: 10,
   },
   submitButtonText: {
     color: '#fff',
@@ -65,9 +67,8 @@ const quizStyles = StyleSheet.create({
     fontSize: 16,
   },
    backButton: {
-    backgroundColor: '#f0f0f0',
-    marginBottom: 16,
-    paddingRight: 12,
+    backgroundColor: 'white',
+    marginTop: 30,
   },
 
 });

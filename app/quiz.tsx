@@ -52,7 +52,11 @@ export default function QuizScreen() {
   return (
     <ScrollView contentContainerStyle={quizStyles.container}>
       
-
+ <TouchableOpacity
+  style={quizStyles.backButton}
+  onPress={() => router.replace('./Intro')}>
+  <Ionicons name="arrow-back" size={24} color="#007AFF" />
+</TouchableOpacity>
       <Text style={quizStyles.title}>Welcome to DRUSHTI!</Text>
       <Text style={quizStyles.title}>Eye Health Quiz</Text>
 
@@ -71,13 +75,7 @@ export default function QuizScreen() {
         onChangeText={setAge}
         keyboardType="numeric"
       />
-      <TextInput
-        style={quizStyles.input}
-        placeholder="Profession"
-        placeholderTextColor="gray"
-        value={profession}
-        onChangeText={setProfession}
-      />
+
 
       {eyeQuestions.map((question, i) => (
         <View key={i} style={quizStyles.questionContainer}>
@@ -114,17 +112,11 @@ export default function QuizScreen() {
       </TouchableOpacity>
 
       <TouchableOpacity
-        style={[quizStyles.submitButton, { backgroundColor: '#4fa9f6', marginTop: 12 }]}
+        style={[quizStyles.submitButton, { backgroundColor: '#4fa9f6', marginTop: 10 }]}
         onPress={() => router.replace('/')}
       >
         <Text style={[quizStyles.submitButtonText, { color: 'white' }]}>Skip Quiz</Text>
       </TouchableOpacity>
-
-      <TouchableOpacity
-  style={quizStyles.backButton}
-  onPress={() => router.replace('./Intro')}>
-  <Ionicons name="arrow-back" size={24} color="#007AFF" />
-</TouchableOpacity>
     </ScrollView>
   );
 }
