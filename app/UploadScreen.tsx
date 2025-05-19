@@ -4,9 +4,17 @@ import * as FileSystem from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
-import React, { useState } from 'react';
-import { ActivityIndicator, Alert, Button, Image, StyleSheet, Text, View } from 'react-native';
-
+import React, { useRef, useState } from 'react';
+import {
+  ActivityIndicator,
+  Alert,
+  Animated,
+  Button,
+  Image,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 
 export default function UploadScreen() {
   const [imageUri, setImageUri] = useState<string | null>(null);
@@ -20,6 +28,9 @@ export default function UploadScreen() {
     subject_risk: string;
   } | null>(null);
   const [loading, setLoading] = useState(false);
+
+  const [instructionVisible, setInstructionVisible] = useState(true);
+  const instructionOpacity = useRef(new Animated.Value(1)).current;
 
   const pickImage = async () => {
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -37,6 +48,15 @@ export default function UploadScreen() {
       setImageUri(pickerResult.assets[0].uri);
       setResult(null);
       setPdfUri(null);
+
+      // Fade out the instruction image
+      Animated.timing(instructionOpacity, {
+        toValue: 0,
+        duration: 600,
+        useNativeDriver: true,
+      }).start(() => {
+        setInstructionVisible(false);
+      });
     }
   };
 
@@ -89,6 +109,7 @@ export default function UploadScreen() {
 
     const logoDataUrl = `data:image/png;base64,${logoBase64}`;
     const uploadedDataUrl = `data:image/jpeg;base64,${uploadedImageBase64}`;
+
 
     const html = `
       <html>
@@ -164,10 +185,17 @@ export default function UploadScreen() {
     await Sharing.shareAsync(uri);
   };
 
-
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Upload Eye Image</Text>
+
+      {instructionVisible && (
+        <Animated.Image
+          source={require('/Users/meghanabss/Downloads/eye/assets/images/instruct.jpeg')}
+          style={[styles.instructionImage, { opacity: instructionOpacity }]}
+          resizeMode="contain"
+        />
+      )}
 
       {imageUri && <Image source={{ uri: imageUri }} style={styles.image} />}
 
@@ -185,8 +213,6 @@ export default function UploadScreen() {
           <View style={{ marginTop: 15 }}>
             <Button title="Share PDF" onPress={sharePDF} />
           </View>
-
-          
         </View>
       )}
     </View>
@@ -204,6 +230,12 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: '600',
     marginBottom: 20,
+  },
+  instructionImage: {
+    width: '100%',
+    height: 280,
+    marginBottom: 15,
+    borderRadius: 8,
   },
   image: {
     width: 260,

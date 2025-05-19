@@ -20,7 +20,15 @@ export default function RootLayout() {
         <Stack.Screen name="Intro" options={{ headerShown: false }} />
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="quiz" options={{ headerShown: false }} />
-        {/* Other screens */}
+        <Stack.Screen name="ColorGame" options={{ headerShown: false }} />
+        <Stack.Screen name="DistanceVisionTest" options={{ headerShown: false }} />
+        <Stack.Screen name="EyeGameMenu" options={{ headerShown: false }} />
+        <Stack.Screen name="FollowDot" options={{ headerShown: false }} />
+        <Stack.Screen name="NearVisionTest" options={{ headerShown: false }} />
+        <Stack.Screen name="PediatricVisionTest" options={{ headerShown: false }} />
+        <Stack.Screen name="ResultScreen" options={{ headerShown: false }} />
+        <Stack.Screen name="UploadScreen" options={{ headerShown: false }} />
+        <Stack.Screen name="EyeColor" options={{ headerShown: false }} />{/* Other screens */}
       </Stack>
       <StatusBar style="auto" />
     </ThemeProvider>

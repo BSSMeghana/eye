@@ -15,7 +15,7 @@ const features: {
   icon: keyof typeof MaterialCommunityIcons.glyphMap;
   route: RoutePath;
 }[] = [
-  { key: 'upload', label: 'Scan Eye', icon: 'eye-outline', route: '/UploadScreen' },
+  { key: 'upload', label: 'Upload', icon: 'upload-outline', route: '/UploadScreen' },
   { key: 'vision', label: 'Vision Test', icon: 'eye-check-outline', route: '/EyeTestMenu' },
   { key: 'color', label: 'Color Test', icon: 'palette-outline', route: '/EyeColor' },
   { key: 'games', label: 'Eye Games', icon: 'gamepad-variant-outline', route: '/EyeGameMenu' },

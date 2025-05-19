@@ -28,7 +28,7 @@ export default function DiseaseCarousel() {
         showsPagination
         dotStyle={styles.dot}
         activeDotStyle={styles.activeDot}
-        paginationStyle={{ bottom: 50 }}
+        paginationStyle={{ bottom: 30 }}
         height={60}
       >
         {banners.map((item) => (
