@@ -57,8 +57,8 @@ export default function QuizScreen() {
   onPress={() => router.replace('./Intro')}>
   <Ionicons name="arrow-back" size={24} color="#007AFF" />
 </TouchableOpacity>
-      <Text style={quizStyles.title}>Welcome to DRUSHTI</Text>
-      <Text style={quizStyles.title}>Eye Health Quiz</Text>
+      <Text style={quizStyles.title}>DRUSHTI</Text>
+      <Text style={quizStyles.subtitle}>let's take a quick eye quiz!</Text>
 
       <TextInput
         style={quizStyles.input}

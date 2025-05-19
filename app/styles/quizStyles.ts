@@ -8,14 +8,22 @@ const quizStyles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   title: {
-    fontSize: 24,
+    fontSize: 25,
     fontWeight: 'bold',
-    marginBottom: 10,
+    marginBottom: 8,
     textAlign: 'center',
-    color: '#3a8dde',
+    color: '#003366',
     marginTop: 5,
   
   },
+  subtitle: {
+    fontSize: 15,
+    marginBottom: 8,
+    textAlign: 'center',
+    color: '#003366',
+    marginTop: 5,
+  },
+
   input: {
     borderWidth: 1,
     borderColor: '#ccc',

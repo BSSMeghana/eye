@@ -1,31 +1,32 @@
+
 import { StyleSheet } from 'react-native';
 
 const indexStyles = StyleSheet.create({
   container: {
     paddingVertical: 40,
     paddingHorizontal: 24,
-    backgroundColor: '#a1c4fd',
+    backgroundColor: 'white',
     flexGrow: 1,
     alignItems: 'center',
   },
 
   // Header section with rounded bottom corners
   header: {
-    width: '100%',
-    backgroundColor: '#3a8dde',
-    paddingVertical: 30,
-    paddingHorizontal: 40,
-    alignItems: 'center',
-  },
+  marginTop: 10,
+  textAlign: 'center',
+},
+
   title: {
-    fontSize: 32,
+    fontSize: 25,
     fontWeight: 'bold',
-    color: 'white',
+    color: '#064578',
+    textAlign: 'center',
   },
   subtitle: {
-    fontSize: 18,
-    color: 'white',
+    fontSize: 15,
+    color: '#064578',
     marginTop: 8,
+    marginBottom: 10,
   },
   // Primary button style
   button: {
@@ -49,15 +50,17 @@ const indexStyles = StyleSheet.create({
 
   // Features cards container and card styles (unchanged)
   cardContainer: {
-    width: '100%',
+    width: '90%',
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-around',
-    marginTop: 30,
+    marginTop: 10,
+    marginBottom:20,
+    alignItems: 'center',
   },
   card: {
     backgroundColor: 'white',
-    width: '40%',
+    width: '30%',
     aspectRatio: 1,
     borderRadius: 15,
     marginVertical: 12,
@@ -67,13 +70,15 @@ const indexStyles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 10,
     elevation: 5,
+    marginBottom: 5,
   },
   cardLabel: {
-    marginTop: 12,
-    fontSize: 16,
+    marginTop: 5,
+    fontSize: 12,
     fontWeight: '600',
-    color: '#064578',
+    color: '#4fa9f6',
     textAlign: 'center',
+    marginBottom: 5,
   },
 
   // Footer container
@@ -82,16 +87,14 @@ const indexStyles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 20,
-    width: '100%',
   },
   footerText: {
     fontSize: 17,
     color: '#444',
   },
-  backButton: {
-    backgroundColor: '#f0f0f0',
-    marginBottom: 16,
+   backButton: {
+    backgroundColor: 'white',
+    right: 150,
   },
 });
 
