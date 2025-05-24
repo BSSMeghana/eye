@@ -2,13 +2,13 @@ import React from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 
 const symbolGroups = [
-  ['★', '●', '■', '♥'],
-  ['♥', '✦', '◆', '♣'],
+  ['★', '●', '■', '♥︎'],
+  ['♥︎', '◼︎', '♦︎', '✕'],
   ['⬟', '●', '◼', '◆'],
   ['▶︎', '◀︎', '▼', '▲'],
   ['+', '−', '×', '÷'],
   ['⬅︎', '⬊', '⬆︎', '⬇︎'],   // Added line 1
-  ['♠', '♦', '♣', '♥'], 
+  ['♠', '♦︎', '♣', '♥︎'], 
 ];
 
 const fontSizes = [72, 60, 48, 36, 24,  18, 14]; // decreasing sizes
@@ -37,16 +37,17 @@ const styles = StyleSheet.create({
   container: {
     padding: 20,
     alignItems: 'center',
+    backgroundColor: '#fff',
   },
   instruction: {
     fontSize: 16,
-    marginBottom: 50,
+    marginBottom: 20,
     color: '#0a4a7d',
     textAlign: 'center',
   },
   symbolRow: {
     flexDirection: 'row',
-    marginBottom: 40,
+    marginBottom: 30,
     justifyContent: 'space-around',
     width: '100%',
   },

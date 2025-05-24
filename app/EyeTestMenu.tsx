@@ -11,7 +11,7 @@ export default function EyeTestMenu() {
       <Text style={styles.title}>Select Vision Test</Text>
 
       <TouchableOpacity style={styles.button} onPress={() => router.push('/DistanceVisionTest')}>
-        <Text style={styles.buttonText}>Distance Vision Test (10 feet)</Text>
+        <Text style={styles.buttonText}>Distance Vision Test</Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.button} onPress={() => router.push('/NearVisionTest')}>
@@ -20,6 +20,10 @@ export default function EyeTestMenu() {
 
       <TouchableOpacity style={styles.button} onPress={() => router.push('/PediatricVisionTest')}>
         <Text style={styles.buttonText}>Pediatric Vision Test</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.button} onPress={() => router.push('/EyeColor')}>
+        <Text style={styles.buttonText}>Color Test</Text>
       </TouchableOpacity>
     </View>
   );
@@ -31,12 +35,12 @@ const styles = StyleSheet.create({
     justifyContent:'center',
     alignItems:'center',
     padding: 20,
-    backgroundColor: '#a1c4fd',
+    backgroundColor: '#fff',
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 40,
+    marginBottom: 30,
     color: '#064578',
   },
   button: {

@@ -28,7 +28,7 @@ export default function DiseaseCarousel() {
         showsPagination
         dotStyle={styles.dot}
         activeDotStyle={styles.activeDot}
-        paginationStyle={{ bottom: 30 }}
+        paginationStyle={{ bottom: 120 }}
         height={60}
       >
         {banners.map((item) => (
@@ -47,15 +47,15 @@ export default function DiseaseCarousel() {
 const styles = StyleSheet.create({
   container: {
     width: 335,
-    height: 280,
+    height: 350,
     marginBottom: 10,
     overflow: 'hidden', // ensures image stays within rounded corners
   },
   bannerImage: {
     width: '100%',
-    height: 270,
+    height: 340,
     borderRadius: 10,
-    marginTop: -40,
+    marginTop: -60,
   },
   dot: {
     backgroundColor: '#ccc',

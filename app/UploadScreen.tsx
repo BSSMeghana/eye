@@ -1,22 +1,27 @@
+import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
 import { Asset } from 'expo-asset';
 import * as FileSystem from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
 import * as Print from 'expo-print';
+import { useRouter } from 'expo-router';
 import * as Sharing from 'expo-sharing';
 import React, { useRef, useState } from 'react';
+import { Modal, Pressable, TouchableOpacity } from 'react-native';
+import UploadStyles from './styles/UploadStyles';
+
 import {
   ActivityIndicator,
   Alert,
   Animated,
   Button,
   Image,
-  StyleSheet,
   Text,
   View,
 } from 'react-native';
 
 export default function UploadScreen() {
+  const router = useRouter();
   const [imageUri, setImageUri] = useState<string | null>(null);
   const [pdfUri, setPdfUri] = useState<string | null>(null);
   const [result, setResult] = useState<{
@@ -31,8 +36,27 @@ export default function UploadScreen() {
 
   const [instructionVisible, setInstructionVisible] = useState(true);
   const instructionOpacity = useRef(new Animated.Value(1)).current;
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  // Helper: clear state on error and restore instruction image
+  const handleError = (msg: string) => {
+    setErrorMessage(msg);
+    setImageUri(null);  // Hide invalid image immediately
+    setResult(null);    // Clear old result
+
+    // Restore instruction image visibility and opacity
+    setInstructionVisible(true);
+    Animated.timing(instructionOpacity, {
+      toValue: 1,
+      duration: 600,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  // Pick image from gallery
   const pickImage = async () => {
+    if (loading) return; // Prevent multiple triggers during loading
+
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permissionResult.granted) {
       Alert.alert('Permission Required', 'Permission to access media library is required!');
@@ -45,11 +69,13 @@ export default function UploadScreen() {
     });
 
     if (!pickerResult.canceled) {
-      setImageUri(pickerResult.assets[0].uri);
+      const uri = pickerResult.assets[0].uri;
+
+      // Clear old results & image before new upload
+      setImageUri(uri);
       setResult(null);
       setPdfUri(null);
 
-      // Fade out the instruction image
       Animated.timing(instructionOpacity, {
         toValue: 0,
         duration: 600,
@@ -57,40 +83,94 @@ export default function UploadScreen() {
       }).start(() => {
         setInstructionVisible(false);
       });
+
+      setTimeout(() => uploadImage(uri), 200);
     }
   };
 
-  const uploadImage = async () => {
-    if (!imageUri) return;
+  // Capture image from camera
+  const captureImage = async () => {
+    if (loading) return; // Prevent multiple triggers during loading
+
+    const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+    if (!permissionResult.granted) {
+      Alert.alert('Permission Required', 'Permission to access camera is required!');
+      return;
+    }
+
+    const cameraResult = await ImagePicker.launchCameraAsync({
+      allowsEditing: true,
+      base64: false,
+    });
+
+    if (!cameraResult.canceled) {
+      const uri = cameraResult.assets[0].uri;
+
+      setImageUri(uri);
+      setResult(null);
+      setPdfUri(null);
+
+      Animated.timing(instructionOpacity, {
+        toValue: 0,
+        duration: 600,
+        useNativeDriver: true,
+      }).start(() => {
+        setInstructionVisible(false);
+      });
+
+      setTimeout(() => uploadImage(uri), 200);
+    }
+  };
+
+  // Upload image to backend for prediction
+  const uploadImage = async (uri?: string) => {
+    const imageToUpload = uri || imageUri;
+    if (!imageToUpload) return;
+
     setLoading(true);
+    setErrorMessage(null); // Clear any previous errors
 
     const formData = new FormData();
     formData.append('file', {
-      uri: imageUri,
+      uri: imageToUpload,
       type: 'image/jpeg',
       name: 'eye.jpg',
     } as any);
 
     try {
-      const response = await axios.post('https://eyebackend.onrender.com/predict', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      const response = await axios.post(
+        'https://873f-2401-4900-8fcc-e5f5-100b-19d2-37bc-2a90.ngrok-free.app/predict',
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
 
       if (response.data.result && response.data.result.length > 0) {
         setResult(response.data.result[0]);
       } else {
-        Alert.alert('Error', 'No prediction result found');
+        handleError('No prediction result found. Please try with a valid retina image.');
       }
-    } catch (error) {
-      console.error(error);
-      Alert.alert('Error', 'Failed to upload image');
+    } catch (error: any) {
+      if (error.response) {
+        if (error.response.status === 400) {
+          handleError('Invalid image. Please upload a valid retina image.');
+        } else if (error.response.status === 404) {
+          handleError('Server endpoint not found. Please try again later.');
+        } else {
+          handleError('Failed to upload image. Please try again.');
+        }
+      } else {
+        handleError('Network error. Please check your internet connection.');
+      }
     } finally {
       setLoading(false);
     }
   };
 
+  // Generate PDF report and share
   const sharePDF = async () => {
     if (!result || !imageUri) return;
 
@@ -107,8 +187,8 @@ export default function UploadScreen() {
       encoding: FileSystem.EncodingType.Base64,
     });
 
-    const logoDataUrl = `data:image/png;base64,${logoBase64}`;
-    const uploadedDataUrl = `data:image/jpeg;base64,${uploadedImageBase64}`;
+const logoDataUrl = `data:image/png;base64,${logoBase64}`;
+const uploadedDataUrl = `data:image/jpeg;base64,${uploadedImageBase64}`;
 
 
     const html = `
@@ -186,76 +266,63 @@ export default function UploadScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Upload Eye Image</Text>
+    <View style={UploadStyles.container}>
+      <TouchableOpacity style={UploadStyles.backButton} onPress={() => router.push('/')} disabled={loading}>
+        <Ionicons name="arrow-back" size={28} color={loading ? '#ccc' : '#007AFF'} />
+      </TouchableOpacity>
+      <Text style={UploadStyles.title}>UPLOAD IMAGE</Text>
 
       {instructionVisible && (
         <Animated.Image
-          source={require('/Users/meghanabss/Downloads/eye/assets/images/instruct.jpeg')}
-          style={[styles.instructionImage, { opacity: instructionOpacity }]}
+          source={require('../assets/images/int.png')}
+          style={[UploadStyles.instructionImage, { opacity: instructionOpacity }]}
           resizeMode="contain"
         />
       )}
 
-      {imageUri && <Image source={{ uri: imageUri }} style={styles.image} />}
-
-      <Button title="Pick an Image" onPress={pickImage} />
-
-      {imageUri && <Button title="Upload & Predict" onPress={uploadImage} disabled={loading} />}
-
-      {loading && <ActivityIndicator size="large" color="#1e90ff" style={{ marginTop: 20 }} />}
-
-      {result && (
-        <View style={styles.resultBox}>
-          <Text style={styles.resultText}>Prediction: {result.name}</Text>
-          <Text style={styles.resultText}>Confidence: {result.accuracy}</Text>
-
-          <View style={{ marginTop: 15 }}>
-            <Button title="Share PDF" onPress={sharePDF} />
-          </View>
+      {/* Only show image preview if there's an image and no error */}
+      {imageUri && !errorMessage && (
+        <View style={UploadStyles.previewWrapper}>
+          <Image source={{ uri: imageUri }} style={UploadStyles.previewImage} />
+          <Button title="Upload Image Again" onPress={() => uploadImage()} disabled={loading} />
         </View>
       )}
+
+      {/* Show error message modal */}
+      <Modal
+        visible={!!errorMessage}
+        animationType="fade"
+        transparent={true}
+        onRequestClose={() => setErrorMessage(null)}
+      >
+        <View style={UploadStyles.modalOverlay}>
+          <View style={UploadStyles.modalContent}>
+            <Text style={UploadStyles.errorText}>{errorMessage}</Text>
+            <Button title="OK" onPress={() => setErrorMessage(null)} />
+          </View>
+        </View>
+      </Modal>
+
+      {loading && <ActivityIndicator size="large" color="#007AFF" style={{ marginVertical: 20 }} />}
+
+      {result && (
+        <View style={UploadStyles.resultContainer}>
+          <Text style={UploadStyles.resultText}>Result: {result.name}</Text>
+          <Text style={UploadStyles.resultText}>Confidence: {result.accuracy}</Text>
+          <Text style={UploadStyles.resultText}>Remedy: {result.remedy}</Text>
+          <Text style={UploadStyles.resultText}>Risk: {result.subject_risk}</Text>
+          <Button title="Share PDF Report" onPress={sharePDF} />
+        </View>
+      )}
+
+      <View style={UploadStyles.buttonRow}>
+        <Pressable style={UploadStyles.button} onPress={pickImage} disabled={loading}>
+          <Text style={UploadStyles.buttonText}>Pick Image</Text>
+        </Pressable>
+        <Pressable style={UploadStyles.button} onPress={captureImage} disabled={loading}>
+          <Text style={UploadStyles.buttonText}>Capture Image</Text>
+        </Pressable>
+      </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 24,
-    alignItems: 'center',
-    backgroundColor: '#fff',
-  },
-  title: {
-    fontSize: 22,
-    fontWeight: '600',
-    marginBottom: 20,
-  },
-  instructionImage: {
-    width: '100%',
-    height: 280,
-    marginBottom: 15,
-    borderRadius: 8,
-  },
-  image: {
-    width: 260,
-    height: 260,
-    resizeMode: 'cover',
-    marginVertical: 15,
-    borderRadius: 10,
-  },
-  resultBox: {
-    marginTop: 20,
-    alignItems: 'center',
-    padding: 15,
-    backgroundColor: '#f0f8ff',
-    borderRadius: 10,
-    width: '100%',
-  },
-  resultText: {
-    fontSize: 18,
-    color: '#333',
-    marginBottom: 5,
-    textAlign: 'center',
-  },
-});

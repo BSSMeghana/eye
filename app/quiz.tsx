@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import quizStyles from './styles/quizStyles';
 
+
 const eyeQuestions: string[] = [
   "Do you feel pain or discomfort in or around your eyes?",
   "Do you experience blurred vision?",
