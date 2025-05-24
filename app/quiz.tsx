@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import quizStyles from './styles/quizStyles';
-
+import * as Speech from 'expo-speech';
 
 const eyeQuestions: string[] = [
   "Do you feel pain or discomfort in or around your eyes?",
@@ -20,6 +20,14 @@ export default function QuizScreen() {
   const [age, setAge] = useState('');
   const [profession, setProfession] = useState('');
   const [answers, setAnswers] = useState<{ [key: number]: string }>({});
+
+  useEffect(() => {
+  Speech.speak("take a quick eye quiz or directly skip");
+
+  return () => {
+    Speech.stop();  // stops any ongoing speech when unmounting
+  };
+}, []);
 
   const handleAnswer = (index: number, answer: string) => {
     setAnswers(prev => ({ ...prev, [index]: answer }));

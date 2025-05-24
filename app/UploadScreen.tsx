@@ -6,22 +6,23 @@ import * as ImagePicker from 'expo-image-picker';
 import * as Print from 'expo-print';
 import { useRouter } from 'expo-router';
 import * as Sharing from 'expo-sharing';
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { Modal, Pressable, TouchableOpacity } from 'react-native';
 import UploadStyles from './styles/UploadStyles';
-
-import {
-  ActivityIndicator,
-  Alert,
-  Animated,
-  Button,
-  Image,
-  Text,
-  View,
-} from 'react-native';
+import * as Speech from 'expo-speech';
+import {ActivityIndicator,Alert,Animated,Button,Image,Text,View,} from 'react-native';
 
 export default function UploadScreen() {
   const router = useRouter();
+
+  useEffect(() => {
+    Speech.speak("Upload");
+  
+    return () => {
+      Speech.stop();  // stops any ongoing speech when unmounting
+    };
+  }, []);
+
   const [imageUri, setImageUri] = useState<string | null>(null);
   const [pdfUri, setPdfUri] = useState<string | null>(null);
   const [result, setResult] = useState<{

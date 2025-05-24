@@ -1,8 +1,16 @@
-import React from 'react';
+import React, { useEffect } from 'react'; 
 import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import * as Speech from 'expo-speech';
 
 export default function Information() {
+   useEffect(() => {
+        Speech.speak("Information");
+      
+        return () => {
+          Speech.stop();  // stops any ongoing speech when unmounting
+        };
+      }, []);
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.container}>
@@ -13,7 +21,6 @@ export default function Information() {
         <Text style={styles.paragraph}>
           Cataract is an eye disease in which the lens of the eye becomes cloudy, leading to blurred or dim vision. The lens is normally clear and helps to focus light onto the retina at the back of the eye. When a cataract forms, it blocks or distorts the light, making it harder to see.
         </Text>
-
         <Text style={styles.subHeading}>Causes</Text>
         <View style={styles.bulletContainer}>
           <Text style={styles.bullet}>• Diabetes</Text>

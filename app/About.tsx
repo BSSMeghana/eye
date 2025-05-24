@@ -1,8 +1,17 @@
-import React from 'react';
+import React, { useEffect } from 'react'; 
 import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import * as Speech from 'expo-speech';
 
 export default function About() {
+
+  useEffect(() => {
+      Speech.speak("About app");
+    
+      return () => {
+        Speech.stop();  // stops any ongoing speech when unmounting
+      };
+    }, []);
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.container}>

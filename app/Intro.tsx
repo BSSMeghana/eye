@@ -1,9 +1,19 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
+import * as Speech from 'expo-speech';
 
 export default function Intro() {
   const router = useRouter();
+
+  useEffect(() => {
+  Speech.speak("Welcome to Drushti, let's get started");
+
+  return () => {
+    Speech.stop();  // stops any ongoing speech when unmounting
+  };
+}, []);
+
 
   return (
     <View style={styles.container}>
