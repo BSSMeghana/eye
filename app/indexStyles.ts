@@ -21,9 +21,17 @@ const indexStyles = StyleSheet.create({
 
   title: {
     marginTop: -5,
-    fontSize: 25,
+    fontSize: 26,
     fontWeight: 'bold',
     color: '#064578',
+    textAlign: 'center',
+  },
+
+  subtitle: {
+    fontSize: 15,
+    color: '#064578',
+    marginTop: 8,
+    marginBottom: 10,
     textAlign: 'center',
   },
 
