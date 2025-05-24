@@ -52,24 +52,27 @@ export default function RootLayout() {
         </View>
 
         {showNav && (
-          <View style={indexStyles.fixedBottomNav}>
-            {features.map(({ key, label, icon, route }) => {
-              const isCenter = key === 'upload';
-              const isActive = pathname === route;
+  <View style={indexStyles.fixedBottomNav}>
+    {features.map(({ key, label, icon, route }) => {
+      const isCenter = key === 'upload';
+      const isActive = pathname === route;
+      // Make upload icon bigger, others smaller
+      const iconSize = key === 'upload' ? 50 : 30;  
 
-              return (
-                <TouchableOpacity
-                  key={key}
-                  style={isCenter ? indexStyles.centerNavItem : indexStyles.bottomNavItem}
-                  onPress={() => router.push(route as RoutePath)}
-                >
-                    <MaterialCommunityIcons name={icon} size={26} color="#007AFF" />
-                  <Text style={indexStyles.bottomNavText}>{label}</Text>
-                </TouchableOpacity>
-              );
-            })}
-          </View>
-        )}
+      return (
+        <TouchableOpacity
+          key={key}
+          style={isCenter ? indexStyles.centerNavItem : indexStyles.bottomNavItem}
+          onPress={() => router.push(route as RoutePath)}
+        >
+          <MaterialCommunityIcons name={icon} size={iconSize} color="#007AFF" />
+          <Text style={indexStyles.bottomNavText}>{label}</Text>
+        </TouchableOpacity>
+      );
+    })}
+  </View>
+)}
+
 
         <StatusBar style="auto" />
       </View>
