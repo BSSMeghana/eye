@@ -1,7 +1,11 @@
-import React, { useEffect } from 'react'; 
-import { View, Text, ScrollView, Linking, Image, TouchableOpacity } from 'react-native';
-import indexStyles from './indexStyles';
 import * as Speech from 'expo-speech';
+import { Image as ExpoImage } from 'expo-image';
+import React, { useEffect } from 'react';
+import { Linking, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { useVoice } from '../context/VoiceProvider';
+import { useResponsiveLayout } from '../hooks/useResponsiveLayout';
+import styles from './styles/HomeCareStyles';
+
 const incidents = [
   {
     key: 'soapInEye',
@@ -64,46 +68,126 @@ const incidents = [
     linkLabel: 'Eye injury first aid',
     linkUrl: 'https://www.dragarwal.com/blog/all-about-cornea/what-you-need-to-know-about-corneal-abrasion/',
   },
-  
   // Add more incidents here if needed
 ];
 
- 
-
 export default function HomeCare() {
+  const {
+    contentMaxWidth,
+    height,
+    isCompact,
+    isFoldable,
+    isLargePhone,
+    isTiny,
+    screenPadding,
+  } = useResponsiveLayout();
+
+  const { voiceEnabled } = useVoice();
 
   useEffect(() => {
-    Speech.speak("Home care");
-  
+    if (voiceEnabled) {
+      Speech.speak('Home care');
+    } else {
+      Speech.stop();
+    }
+
     return () => {
-      Speech.stop();  // stops any ongoing speech when unmounting
+      Speech.stop();
     };
+  }, [voiceEnabled]);
+
+  useEffect(() => {
+    ExpoImage.prefetch(
+      incidents.map(({ image }) => image),
+      'memory-disk'
+    );
   }, []);
 
   return (
-    <ScrollView contentContainerStyle={indexStyles.container}>
-      <Text style={indexStyles.title}>Home Eye Care Tips</Text>
-      <Text style={indexStyles.subtitle}>
-        Common incidents at home and how to manage them safely for kids and elders.
-      </Text>
+    <ScrollView
+      alwaysBounceVertical={false}
+      contentContainerStyle={[
+        styles.container,
+        {
+          minHeight: height,
+          paddingBottom: isTiny ? 110 : 128,
+          paddingHorizontal: screenPadding,
+          paddingTop: isTiny ? 14 : isCompact ? 18 : 24,
+        },
+      ]}
+      showsVerticalScrollIndicator={false}
+    >
+      <View style={[styles.content, { maxWidth: contentMaxWidth }]}>
+        <Text
+          style={[
+            styles.pageTitle,
+            isCompact && styles.pageTitleCompact,
+            isLargePhone && styles.pageTitleLarge,
+          ]}
+        >
+          Home Eye Care Tips
+        </Text>
+        <Text
+          style={[
+            styles.subtitle,
+            isCompact && styles.subtitleCompact,
+            isLargePhone && styles.subtitleLarge,
+          ]}
+        >
+          Common incidents at home and how to manage them safely for kids and elders.
+        </Text>
 
-      {incidents.map(({ key, title, description, image, linkLabel, linkUrl }) => (
-        <View key={key} style={{ marginBottom: 24 }}>
-          <Text style={[indexStyles.title, { fontSize: 20, marginBottom: 8 }]}>{title}</Text>
+        {incidents.map(({ key, title, description, image, linkLabel, linkUrl }) => (
+          <View
+            key={key}
+            style={[
+              styles.card,
+              isCompact && styles.cardCompact,
+              isLargePhone && styles.cardLarge,
+              isFoldable && styles.cardFoldable,
+            ]}
+          >
+            <Text
+              style={[
+                styles.cardTitle,
+                isCompact && styles.cardTitleCompact,
+                isLargePhone && styles.cardTitleLarge,
+              ]}
+            >
+              {title}
+            </Text>
 
-          <Image
-            source={{ uri: image }}
-            style={{ width: '100%', height: 180, borderRadius: 8, marginBottom: 8 }}
-            resizeMode="cover"
-          />
+            <ExpoImage
+              source={{ uri: image }}
+              cachePolicy="memory-disk"
+              transition={180}
+              style={styles.image}
+              contentFit="cover"
+              accessibilityLabel={`Illustration for ${title}`}
+            />
 
-          <Text style={{ fontSize: 16, color: '#333', marginBottom: 8 }}>{description}</Text>
+            <Text
+              style={[
+                styles.description,
+                isCompact && styles.descriptionCompact,
+                isLargePhone && styles.descriptionLarge,
+              ]}
+            >
+              {description}
+            </Text>
 
-          <TouchableOpacity onPress={() => Linking.openURL(linkUrl)}>
-            <Text style={{ color: '#007AFF', fontSize: 16 }}>{linkLabel}</Text>
-          </TouchableOpacity>
-        </View>
-      ))}
+            <TouchableOpacity
+              style={styles.linkButton}
+              onPress={() => Linking.openURL(linkUrl)}
+              activeOpacity={0.72}
+              accessibilityRole="link"
+              accessibilityLabel={`${linkLabel}: ${title}`}
+            >
+              <Text style={[styles.link, isCompact && styles.linkCompact]}>{linkLabel}</Text>
+            </TouchableOpacity>
+          </View>
+        ))}
+      </View>
     </ScrollView>
   );
 }

@@ -1,37 +1,45 @@
-import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import * as Speech from 'expo-speech';
+import React, { useEffect } from 'react';
+import { ActivityIndicator, Image, Text, View } from 'react-native';
+import { colors } from '../constants/theme';
+import { useVoice } from '../context/VoiceProvider'; // ✅ Import context hook
+import { useResponsiveLayout } from '../hooks/useResponsiveLayout';
+import styles from './styles/IntroStyles';
 
 export default function Intro() {
   const router = useRouter();
+  const { isTiny, screenPadding } = useResponsiveLayout();
+  
+  const { voiceEnabled } = useVoice();
 
   useEffect(() => {
-  Speech.speak("Welcome to Drushti, let's get started");
+    if (voiceEnabled) {
+      Speech.speak("Welcome to Drushti");
+    }
 
-  return () => {
-    Speech.stop();  // stops any ongoing speech when unmounting
-  };
-}, []);
+    return () => {
+      Speech.stop();
+    };
+  }, [voiceEnabled]);
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      router.replace('/quiz');
+    }, 1800);
+
+    return () => clearTimeout(timer);
+  }, [router]);
 
   return (
-    <View style={styles.container}>
-      <Image source={require('../assets/images/eyeand.png')} style={styles.logo} />
-      <Text style={styles.title}>DRUSHTI</Text>
+    <View style={[styles.container, { padding: screenPadding }]}>
+      <View style={[styles.logoShell, isTiny && styles.logoShellCompact]}>
+        <Image source={require('../assets/images/appicon7.png')} style={[styles.logo, isTiny && styles.logoCompact]} />
+      </View>
+      <Text style={[styles.title, isTiny && styles.titleCompact]}>DRUSHTI</Text>
+      <Text style={styles.subtitle}>Eye care support, made simple.</Text>
 
-      <TouchableOpacity style={styles.button} onPress={() => router.replace('./quiz')}>
-        <Text style={styles.buttonText}>Let's Get Started!</Text>
-      </TouchableOpacity>
-
+      <ActivityIndicator size="large" color={colors.primary} style={styles.loader} />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#e6f0ff', justifyContent: 'center', alignItems: 'center' },
-  logo: { width: 150, height: 150, marginBottom: 18, borderRadius: 50, },
-  title: { fontSize: 32, fontWeight: 'bold', color: '#003366', marginBottom: 70 },
-  button: { backgroundColor: '#4fa9f6', paddingVertical: 12, paddingHorizontal: 38, borderRadius: 10 },
-  buttonText: { color: 'white', fontSize: 18 },
- });

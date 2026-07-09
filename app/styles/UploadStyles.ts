@@ -1,122 +1,164 @@
-import { Dimensions, StyleSheet } from 'react-native';
-
-const { width } = Dimensions.get('window');
+import { StyleSheet } from 'react-native';
+import { colors, radius, spacing } from '../../constants/theme';
 
 const UploadStyles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: 'white',
-    padding: 20,
     alignItems: 'center',
+    backgroundColor: colors.background,
+    flexGrow: 1,
   },
 
-  backButton: {
-    marginTop: 15,
-    alignSelf: 'flex-start',
-    marginBottom: 5,
-    padding: 6,
+  content: {
+    width: '100%',
+  },
+
+  header: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    marginBottom: spacing.md,
+    minHeight: 48,
   },
 
   title: {
-    fontSize: 22,
-    fontWeight: '700',
-    marginBottom: 20,
-    color: '#064578',
+    color: colors.ink,
+    flex: 1,
+    fontSize: 24,
+    fontWeight: '800',
+    lineHeight: 30,
+    marginHorizontal: spacing.sm,
+    textAlign: 'center',
+  },
+
+  titleCompact: {
+    fontSize: 20,
+    lineHeight: 26,
+  },
+
+  titleLarge: {
+    fontSize: 26,
+    lineHeight: 32,
+  },
+
+  headerSpacer: {
+    width: 44,
+  },
+
+  instructionCard: {
+    backgroundColor: colors.primarySoft,
+    borderColor: colors.border,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    marginBottom: spacing.md,
+    overflow: 'hidden',
+    paddingTop: spacing.lg,
+  },
+
+  instructionCopy: {
+    paddingHorizontal: spacing.lg,
+  },
+
+  instructionTitle: {
+    color: colors.ink,
+    fontSize: 21,
+    fontWeight: '800',
+    marginBottom: spacing.xs,
+  },
+
+  instructionTitleCompact: {
+    fontSize: 18,
+  },
+
+  instructionText: {
+    color: colors.muted,
+    fontSize: 15,
+    lineHeight: 22,
   },
 
   instructionImage: {
-     width: '90%',
-  height: 400,
-  aspectRatio: 16 / 9,
-  marginBottom: 20,
+    marginTop: spacing.sm,
+    width: '100%',
   },
 
   image: {
-    width: width * 0.9,
-    height: width * 0.6,
-    borderRadius: 16,
-    marginBottom: 20,
+    width: '100%',
+    borderRadius: radius.md,
+    marginBottom: spacing.lg,
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: colors.border,
   },
 
   buttonRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    gap: spacing.md,
+    marginBottom: spacing.md,
+    marginTop: spacing.md,
     width: '100%',
-    marginBottom: 25,
   },
 
-  buttonContainer: {
-    flex: 1,
-    marginHorizontal: 8,
+  buttonRowStacked: {
+    flexDirection: 'column',
+    gap: spacing.sm,
   },
 
   resultBox: {
-    backgroundColor: '#e6f0ff',
-    padding: 20,
-    borderRadius: 12,
+    backgroundColor: colors.card,
+    borderColor: colors.border,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    padding: spacing.lg,
     width: '100%',
-    marginTop: 10,
-    shadowColor: '#1e90ff',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 6,
-    elevation: 5,
+    marginTop: spacing.sm,
   },
 
   resultText: {
-    fontSize: 18,
-    color: '#1e90ff',
+    color: colors.ink,
+    fontSize: 16,
     fontWeight: '600',
-    marginBottom: 6,
+    lineHeight: 23,
+    marginBottom: spacing.xs,
   },
 
   // Modal styles
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.4)',
+    backgroundColor: 'rgba(14, 43, 100, 0.34)',
     justifyContent: 'center',
     alignItems: 'center',
   },
 
   modalContent: {
-    backgroundColor: '#fff',
-    borderRadius: 16,
-    paddingVertical: 24,
-    paddingHorizontal: 30,
-    width: width * 0.8,
+    backgroundColor: colors.card,
+    borderRadius: radius.lg,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.lg,
+    maxWidth: 360,
+    width: '86%',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.25,
-    shadowRadius: 5,
-    elevation: 10,
   },
 
   modalTitle: {
     fontSize: 20,
     fontWeight: '700',
     marginBottom: 12,
-    color: '#d9534f',
+    color: colors.warning,
   },
 
   modalMessage: {
     fontSize: 16,
     textAlign: 'center',
     marginBottom: 20,
-    color: '#333',
+    color: colors.ink,
   },
 
   modalButton: {
-    backgroundColor: '#d9534f',
-    borderRadius: 10,
+    backgroundColor: colors.warning,
+    borderRadius: radius.pill,
     paddingVertical: 10,
     paddingHorizontal: 40,
   },
 
   modalButtonText: {
-    color: '#fff',
+    color: colors.card,
     fontSize: 16,
     fontWeight: '600',
   },
@@ -124,47 +166,98 @@ const UploadStyles = StyleSheet.create({
   // Added missing styles to fix your errors:
 
   previewWrapper: {
-    marginTop: 20,
     alignItems: 'center',
     justifyContent: 'center',
+    marginBottom: spacing.sm,
+    width: '100%',
   },
 
   previewImage: {
-    width: width * 0.9,
-    height: width * 0.6,
-    borderRadius: 16,
+    width: '100%',
+    borderRadius: radius.md,
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: colors.border,
   },
 
   errorText: {
-    color: 'red',
+    color: colors.warning,
     fontSize: 14,
     marginVertical: 10,
     textAlign: 'center',
   },
 
   resultContainer: {
-    marginTop: 15,
-    padding: 15,
-    backgroundColor: '#e6f0ff',
-    borderRadius: 10,
+    backgroundColor: colors.card,
+    borderColor: colors.border,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    marginTop: spacing.md,
+    padding: spacing.lg,
     width: '100%',
   },
 
-  button: {
-    backgroundColor: '#007AFF',
-    paddingVertical: 14,
-    paddingHorizontal: 30,
-    borderRadius: 25,
+  resultHeading: {
     alignItems: 'center',
-    marginTop: 20,
+    flexDirection: 'row',
+    gap: spacing.sm,
+    marginBottom: spacing.md,
+  },
+
+  resultTitle: {
+    color: colors.ink,
+    fontSize: 19,
+    fontWeight: '800',
+  },
+
+  resultLabel: {
+    color: colors.muted,
+    fontSize: 13,
+    fontWeight: '700',
+    marginBottom: 2,
+    textTransform: 'uppercase',
+  },
+
+  button: {
+    alignItems: 'center',
+    backgroundColor: colors.primary,
+    borderRadius: radius.pill,
+    flexDirection: 'row',
+    gap: spacing.sm,
+    justifyContent: 'center',
+    minHeight: 48,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 14,
+  },
+
+  buttonInRow: {
+    flex: 1,
+  },
+
+  buttonSecondary: {
+    backgroundColor: colors.card,
+    borderColor: colors.primary,
+    borderWidth: 1,
+  },
+
+  buttonSecondaryText: {
+    color: colors.primary,
+  },
+
+  reportButton: {
+    marginTop: spacing.sm,
   },
 
   buttonText: {
-    color: '#fff',
+    color: colors.card,
     fontWeight: '600',
     fontSize: 16,
+  },
+
+  loadingText: {
+    color: colors.muted,
+    fontSize: 14,
+    marginBottom: spacing.sm,
+    textAlign: 'center',
   },
 });
 

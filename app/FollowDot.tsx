@@ -1,21 +1,23 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, StyleSheet, Animated, Text, TouchableOpacity, Dimensions } from 'react-native';
-
-const DOT_SIZE = 40;
-const { width, height } = Dimensions.get('window');
-
-const getRandomPosition = () => {
-  const paddingTop = 100;      // space for instruction text or status
-  const paddingBottom = 150;   // space for button at bottom
-
-  const x = Math.random() * (width - DOT_SIZE);
-  const y = Math.random() * (height - DOT_SIZE - paddingTop - paddingBottom) + paddingTop;
-
-  return { x, y };
-};
+import { View, Animated, Text, TouchableOpacity } from 'react-native';
+import { useRouter } from 'expo-router';
+import BackChevron from '../components/BackChevron';
+import { useResponsiveLayout } from '../hooks/useResponsiveLayout';
+import styles, { DOT_SIZE } from './styles/FollowDotStyles';
 
 const FollowDot: React.FC = () => {
+  const router = useRouter();
+  const {
+    height,
+    isCompact,
+    isLargePhone,
+    isTiny,
+    screenPadding,
+    width,
+  } = useResponsiveLayout();
   const [started, setStarted] = useState(false);
+  const navigationClearance = isTiny ? 98 : 106;
+  const controlClearance = navigationClearance + (isCompact ? 72 : 82);
 
   // Keep a ref to latest 'started' state for animation loop
   const startedRef = useRef(started);
@@ -26,6 +28,16 @@ const FollowDot: React.FC = () => {
   const animatedX = useRef(new Animated.Value(0)).current;
   const animatedY = useRef(new Animated.Value(0)).current;
   const animationTimeout = useRef<number | null>(null);
+  const getRandomPosition = () => {
+    const topLimit = isTiny ? 64 : 72;
+    const maxX = Math.max(screenPadding, width - DOT_SIZE - screenPadding);
+    const maxY = Math.max(topLimit, height - DOT_SIZE - controlClearance);
+
+    const x = Math.random() * (maxX - screenPadding) + screenPadding;
+    const y = Math.random() * (maxY - topLimit) + topLimit;
+
+    return { x, y };
+  };
 
   const animateToRandomPosition = () => {
     const { x, y } = getRandomPosition();
@@ -71,8 +83,21 @@ const FollowDot: React.FC = () => {
 
   return (
     <View style={styles.container}>
+      <BackChevron
+        onPress={() => router.back()}
+        style={{ left: screenPadding, position: 'absolute', top: isTiny ? 10 : 16 }}
+      />
       {!started && (
-        <Text style={styles.instruction}>Follow the moving dot with your eyes</Text>
+        <Text
+          style={[
+            styles.instruction,
+            isCompact && styles.instructionCompact,
+            isLargePhone && styles.instructionLarge,
+            { left: screenPadding + 50, right: screenPadding + 50, top: isTiny ? 18 : 24 },
+          ]}
+        >
+          Follow the moving dot with your eyes
+        </Text>
       )}
 
       <Animated.View
@@ -87,49 +112,29 @@ const FollowDot: React.FC = () => {
       />
 
       <TouchableOpacity
-        style={styles.controlButton}
+        style={[
+          styles.controlButton,
+          isCompact && styles.controlButtonCompact,
+          isLargePhone && styles.controlButtonLarge,
+          { bottom: navigationClearance },
+        ]}
         onPress={started ? stopAnimation : startAnimation}
+        activeOpacity={0.78}
+        accessibilityRole="button"
+        accessibilityLabel={started ? 'Stop moving dot' : 'Start moving dot'}
       >
-        <Text style={styles.controlButtonText}>{started ? 'Stop' : 'Start'}</Text>
+        <Text
+          style={[
+            styles.controlButtonText,
+            isCompact && styles.controlButtonTextCompact,
+            isLargePhone && styles.controlButtonTextLarge,
+          ]}
+        >
+          {started ? 'Stop' : 'Start'}
+        </Text>
       </TouchableOpacity>
     </View>
   );
 };
 
 export default FollowDot;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  instruction: {
-    position: 'absolute',
-    top: 80,
-    fontSize: 20,
-    color: '#064578',
-    fontWeight: '600',
-  },
-  dot: {
-    position: 'absolute',
-    width: DOT_SIZE,
-    height: DOT_SIZE,
-    borderRadius: DOT_SIZE / 2,
-    backgroundColor: '#4CAF50',
-  },
-  controlButton: {
-    position: 'absolute',
-    bottom: 50,
-    backgroundColor: '#4fa9f6',
-    paddingVertical: 16,
-    paddingHorizontal: 60,
-    borderRadius: 30,
-  },
-  controlButtonText: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: '600',
-  },
-});

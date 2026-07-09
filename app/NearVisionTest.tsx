@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { useRouter } from 'expo-router';
+import BackChevron from '../components/BackChevron';
+import { useResponsiveLayout } from '../hooks/useResponsiveLayout';
+import styles from './styles/VisionTestStyles';
 
 const letterGroups = [
   ['P', 'G', 'H', 'D'],
@@ -15,95 +19,107 @@ const letterGroups = [
 const fontSizes = [48, 42, 36, 30, 24, 18, 14, 10]; // Decreasing font sizes for each page
 
 export default function NearVisionTest() {
+  const router = useRouter();
+  const {
+    contentMaxWidth,
+    contentWidth,
+    height,
+    isCompact,
+    isLargePhone,
+    isTiny,
+    screenPadding,
+  } = useResponsiveLayout();
   const [page, setPage] = useState(0);
-  const [lastReadableSize, setLastReadableSize] = useState(fontSizes[0]);
+  const responsiveFontSize = Math.min(fontSizes[page], contentWidth / 5);
+  const instructionStyle = [
+    styles.instruction,
+    styles.nearInstruction,
+    isCompact && styles.instructionCompact,
+    isLargePhone && styles.instructionLarge,
+  ];
+  const buttonsContainerStyle = [
+    styles.buttonsContainer,
+    styles.nearButtonsContainer,
+    isTiny && styles.buttonsStacked,
+    isCompact && styles.buttonsContainerCompact,
+  ];
+  const buttonStyle = [
+    styles.button,
+    isCompact && styles.buttonCompact,
+    isLargePhone && styles.buttonLarge,
+  ];
+  const buttonTextStyle = [
+    styles.buttonText,
+    isCompact && styles.buttonTextCompact,
+    isLargePhone && styles.buttonTextLarge,
+  ];
 
   const handleCanRead = () => {
-    setLastReadableSize(fontSizes[page]);
+    const nextScore = page + 1;
+
     if (page < letterGroups.length - 1) {
       setPage(page + 1);
     } else {
-      alert(`Test complete! Your near vision font size: ${fontSizes[page]}`);
-      // navigate to result or reset test
+      router.push({
+        pathname: '/ResultScreen',
+        params: { maxScore: letterGroups.length.toString(), score: nextScore.toString(), testType: 'near' },
+      });
     }
   };
 
   const handleCantRead = () => {
-    alert(`Test complete! Your near vision font size: ${lastReadableSize}`);
-    // navigate to result or reset test
+    router.push({
+      pathname: '/ResultScreen',
+      params: { maxScore: letterGroups.length.toString(), score: page.toString(), testType: 'near' },
+    });
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.instruction}>
-        Hold your phone at about 14 inches (35 cm) from your eyes.
-      </Text>
+    <ScrollView
+      contentContainerStyle={[
+        styles.container,
+        styles.nearContainer,
+        {
+          minHeight: height,
+          paddingBottom: isTiny ? 112 : 128,
+          paddingHorizontal: screenPadding,
+          paddingTop: isTiny ? 38 : isCompact ? 46 : 56,
+        },
+      ]}
+    >
+      <BackChevron
+        onPress={() => router.back()}
+        style={{ left: screenPadding, position: 'absolute', top: isTiny ? 10 : 16 }}
+      />
+      <View style={[styles.nearContent, { maxWidth: contentMaxWidth }]}>
+        <Text style={instructionStyle}>
+          Hold your phone at about 14 inches (35 cm) from your eyes.
+        </Text>
 
-      <View style={styles.letterContainer}>
-        {letterGroups[page].map((letter, index) => (
-          <Text key={index} style={[styles.letter, { fontSize: fontSizes[page] }]}>
-            {letter}
-          </Text>
-        ))}
+        <View style={styles.nearLetterContainer}>
+          {letterGroups[page].map((letter, index) => (
+            <Text
+              key={index}
+              style={[
+                styles.letter,
+                { fontSize: responsiveFontSize, lineHeight: responsiveFontSize * 1.2 },
+              ]}
+            >
+              {letter}
+            </Text>
+          ))}
+        </View>
+
+        <View style={buttonsContainerStyle}>
+          <TouchableOpacity style={buttonStyle} onPress={handleCanRead} activeOpacity={0.78}>
+            <Text style={buttonTextStyle}>Can Read</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={buttonStyle} onPress={handleCantRead} activeOpacity={0.78}>
+            <Text style={buttonTextStyle}>Cannot Read</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-
-      <View style={styles.buttonsContainer}>
-        <TouchableOpacity style={styles.button} onPress={handleCanRead}>
-          <Text style={styles.buttonText}>Can Read</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.button} onPress={handleCantRead}>
-          <Text style={styles.buttonText}>Can't Read</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+    </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: 'white',
-    padding: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  instruction: {
-    fontSize: 16,
-    color: '#064578',
-    position: 'absolute',
-    top: 40,
-    left: 20,
-    right: 20,
-    textAlign: 'center',
-  },
-  letterContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    width: '100%',
-    marginTop: 50,
-    marginBottom: 150,
-  },
-  letter: {
-    fontWeight: 'bold',
-    color: 'black',
-  },
-  buttonsContainer: {
-    flexDirection: 'row',
-    marginBottom: 20,
-    justifyContent: 'space-around',
-    width: '100%',
-  },
-  button: {
-    backgroundColor: '#4fa9f6',
-    paddingVertical: 14,
-    paddingHorizontal: 32,
-    borderRadius: 30,
-    marginHorizontal: 10,
-  },
-  buttonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-});

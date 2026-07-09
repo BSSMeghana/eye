@@ -1,8 +1,8 @@
 import React from 'react';
-import { Dimensions, Image, StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 import Swiper from 'react-native-swiper';
-
-const { width } = Dimensions.get('window');
+import { colors, radius } from '../../constants/theme';
+import { useResponsiveLayout } from '../../hooks/useResponsiveLayout';
 
 const banners = [
   {
@@ -20,16 +20,20 @@ const banners = [
 ];
 
 export default function DiseaseCarousel() {
+  const { contentWidth, isTiny } = useResponsiveLayout();
+  const carouselWidth = Math.min(contentWidth, 430);
+  const carouselHeight = isTiny ? 240 : 300;
+
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { height: carouselHeight, width: carouselWidth }]}>
       <Swiper
         autoplay
         autoplayTimeout={4}
         showsPagination
         dotStyle={styles.dot}
         activeDotStyle={styles.activeDot}
-        paginationStyle={{ bottom: 120 }}
-        height={60}
+        paginationStyle={{ bottom: 18 }}
+        height={carouselHeight}
       >
         {banners.map((item) => (
           <Image
@@ -46,26 +50,23 @@ export default function DiseaseCarousel() {
 
 const styles = StyleSheet.create({
   container: {
-    width: 335,
-    height: 350,
     marginBottom: 10,
     overflow: 'hidden', // ensures image stays within rounded corners
   },
   bannerImage: {
+    borderRadius: radius.md,
+    height: '100%',
     width: '100%',
-    height: 340,
-    borderRadius: 10,
-    marginTop: -60,
   },
   dot: {
-    backgroundColor: '#ccc',
+    backgroundColor: colors.border,
     width: 7,
     height: 7,
     borderRadius: 5,
     marginHorizontal: 10,
   },
   activeDot: {
-    backgroundColor: '#007AFF',
+    backgroundColor: colors.primary,
     width: 7,
     height: 7,
     borderRadius: 5,

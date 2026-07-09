@@ -1,134 +1,157 @@
-import React, { useEffect } from 'react'; 
-import { View, Text, ScrollView, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Speech from 'expo-speech';
+import { useRouter } from 'expo-router';
+import React, { useEffect } from 'react';
+import { ScrollView, Text, View } from 'react-native';
+import * as Animatable from 'react-native-animatable';
+import BackChevron from '../components/BackChevron';
+import { useVoice } from '../context/VoiceProvider';
+import { useResponsiveLayout } from '../hooks/useResponsiveLayout';
+import styles from './styles/InformationStyles';
+
+const informationSections = [
+  {
+    groups: [
+      {
+        heading: 'Causes',
+        items: ['Diabetes', 'Eye injury', 'Long-term steroid use', 'Smoking or alcohol', 'Genetics', 'UV radiation'],
+      },
+      {
+        heading: 'Symptoms',
+        items: ['Blurry vision', 'Faded colors', 'Night vision difficulty', 'Frequent prescription changes'],
+      },
+    ],
+    introduction:
+      'Cataract is a condition where the eye’s lens becomes cloudy, causing blurred or dim vision.',
+    title: 'Cataract',
+  },
+  {
+    groups: [
+      {
+        heading: 'How it happens',
+        items: ['Vessel leakage or swelling', 'Blocked blood supply', 'Abnormal vessel growth'],
+      },
+      {
+        heading: 'Symptoms',
+        items: ['Often no early symptoms', 'Blurry vision', 'Sudden vision loss'],
+      },
+    ],
+    introduction:
+      'Caused by diabetes, it damages the retina’s blood vessels and can lead to vision loss.',
+    title: 'Diabetic Retinopathy',
+  },
+  {
+    groups: [
+      {
+        heading: 'Causes',
+        items: ['High eye pressure', 'Blocked fluid drainage', 'Injuries or genetics', 'Diabetes or hypertension'],
+      },
+      {
+        heading: 'Symptoms',
+        items: ['No early symptoms', 'Side vision loss', 'Tunnel vision', 'Eye pain or redness'],
+      },
+    ],
+    introduction:
+      'A group of eye conditions that damage the optic nerve due to increased pressure. If untreated, it can cause blindness.',
+    title: 'Glaucoma',
+  },
+];
 
 export default function Information() {
-   useEffect(() => {
-        Speech.speak("Information");
-      
-        return () => {
-          Speech.stop();  // stops any ongoing speech when unmounting
-        };
-      }, []);
+  const router = useRouter();
+  const {
+    contentMaxWidth,
+    height,
+    isCompact,
+    isLargePhone,
+    isTiny,
+    screenPadding,
+  } = useResponsiveLayout();
+  const { voiceEnabled } = useVoice();
+
+  useEffect(() => {
+    if (voiceEnabled) {
+      Speech.speak('Information');
+    } else {
+      Speech.stop();
+    }
+
+    return () => {
+      Speech.stop();
+    };
+  }, [voiceEnabled]);
+
+  const titleStyle = [
+    styles.title,
+    isCompact && styles.titleCompact,
+    isLargePhone && styles.titleLarge,
+  ];
+  const headingStyle = [
+    styles.heading,
+    isCompact && styles.headingCompact,
+    isLargePhone && styles.headingLarge,
+  ];
+  const paragraphStyle = [
+    styles.paragraph,
+    isCompact && styles.paragraphCompact,
+    isLargePhone && styles.paragraphLarge,
+  ];
+  const subHeadingStyle = [
+    styles.subHeading,
+    isCompact && styles.subHeadingCompact,
+    isLargePhone && styles.subHeadingLarge,
+  ];
+  const bulletStyle = [
+    styles.bullet,
+    isCompact && styles.bulletCompact,
+    isLargePhone && styles.bulletLarge,
+  ];
+
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <ScrollView contentContainerStyle={styles.container}>
-        <Text style={styles.title}>INFORMATION</Text>
+    <View style={styles.safeArea}>
+      <ScrollView
+        contentContainerStyle={[
+          styles.container,
+          {
+            minHeight: height,
+            paddingBottom: isTiny ? 104 : 120,
+            paddingHorizontal: screenPadding,
+            paddingTop: isTiny ? 18 : 28,
+          },
+        ]}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={{ maxWidth: contentMaxWidth, width: '100%' }}>
+          <View style={styles.header}>
+            <BackChevron onPress={() => router.back()} />
+            <Text style={titleStyle}>Information</Text>
+            <View style={styles.headerSpacer} />
+          </View>
 
-        {/* Cataract Section */}
-        <Text style={styles.heading}> Cataract</Text>
-        <Text style={styles.paragraph}>
-          Cataract is an eye disease in which the lens of the eye becomes cloudy, leading to blurred or dim vision. The lens is normally clear and helps to focus light onto the retina at the back of the eye. When a cataract forms, it blocks or distorts the light, making it harder to see.
-        </Text>
-        <Text style={styles.subHeading}>Causes</Text>
-        <View style={styles.bulletContainer}>
-          <Text style={styles.bullet}>• Diabetes</Text>
-          <Text style={styles.bullet}>• Eye injury</Text>
-          <Text style={styles.bullet}>• Long-term use of steroids</Text>
-          <Text style={styles.bullet}>• Smoking and alcohol use</Text>
-          <Text style={styles.bullet}>• Genetic factors</Text>
-          <Text style={styles.bullet}>• Excessive exposure to sunlight (UV radiation)</Text>
-        </View>
+          {informationSections.map((section, sectionIndex) => (
+            <Animatable.View
+              key={section.title}
+              animation="fadeInUp"
+              duration={800}
+              delay={sectionIndex * 300}
+              style={[styles.card, isCompact && styles.cardCompact]}
+            >
+              <Text style={headingStyle}>{section.title}</Text>
+              <Text style={paragraphStyle}>{section.introduction}</Text>
 
-        <Text style={styles.subHeading}>Symptoms</Text>
-        <View style={styles.bulletContainer}>
-          <Text style={styles.bullet}>• Blurry vision</Text>
-          <Text style={styles.bullet}>• Faded colors</Text>
-          <Text style={styles.bullet}>• Difficulty seeing at night</Text>
-          <Text style={styles.bullet}>• Frequent changes in eyeglass prescription</Text>
-        </View>
-
-        {/* Diabetic Retinopathy Section */}
-        <Text style={styles.heading}> Diabetic Retinopathy</Text>
-        <Text style={styles.paragraph}>
-          Diabetic Retinopathy is an eye disease that occurs in people with diabetes. It happens when high blood sugar levels damage the blood vessels in the retina, the light-sensitive layer at the back of the eye. Over time, this can lead to vision problems or even blindness.
-        </Text>
-
-        <Text style={styles.subHeading}>How it happens</Text>
-        <View style={styles.bulletContainer}>
-          <Text style={styles.bullet}>• Blood vessels leak fluid or blood</Text>
-          <Text style={styles.bullet}>• Blood vessels swell</Text>
-          <Text style={styles.bullet}>• Blood vessels close off</Text>
-          <Text style={styles.bullet}>• New abnormal blood vessels grow</Text>
-        </View>
-
-        <Text style={styles.subHeading}>Symptoms</Text>
-        <View style={styles.bulletContainer}>
-          <Text style={styles.bullet}>• Often no early symptoms</Text>
-          <Text style={styles.bullet}>• Blurry vision</Text>
-          <Text style={styles.bullet}>• Sudden loss of vision</Text>
-        </View>
-
-        {/* Glaucoma Section */}
-        <Text style={styles.heading}> Glaucoma</Text>
-        <Text style={styles.paragraph}>
-          Glaucoma is a group of eye conditions that damage the optic nerve, which is vital for good vision. This damage is often caused by abnormally high pressure in the eye. If untreated, glaucoma can lead to permanent vision loss or blindness.
-        </Text>
-
-        <Text style={styles.subHeading}>Causes</Text>
-        <View style={styles.bulletContainer}>
-          <Text style={styles.bullet}>• Increased intraocular pressure</Text>
-          <Text style={styles.bullet}>• Blockage of fluid drainage in the eye</Text>
-          <Text style={styles.bullet}>• Eye injury</Text>
-          <Text style={styles.bullet}>• Genetics and age</Text>
-          <Text style={styles.bullet}>• Certain medical conditions like diabetes and high blood pressure</Text>
-        </View>
-
-        <Text style={styles.subHeading}>Symptoms</Text>
-        <View style={styles.bulletContainer}>
-          <Text style={styles.bullet}>• Often no early symptoms (silent thief of sight)</Text>
-          <Text style={styles.bullet}>• Loss of peripheral (side) vision</Text>
-          <Text style={styles.bullet}>• Tunnel vision in advanced stages</Text>
-          <Text style={styles.bullet}>• Eye pain or redness (in some types)</Text>
+              {section.groups.map((group) => (
+                <View key={group.heading}>
+                  <Text style={subHeadingStyle}>{group.heading}</Text>
+                  <View style={styles.bulletContainer}>
+                    {group.items.map((item) => (
+                      <Text key={item} style={bulletStyle}>• {item}</Text>
+                    ))}
+                  </View>
+                </View>
+              ))}
+            </Animatable.View>
+          ))}
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
-
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  container: {
-    padding: 20,
-    paddingBottom: 40,
-  },
-  title: {
-fontSize: 25,
-    fontWeight: 'bold',
-    color: '#064578',
-    textAlign: 'center',
-    marginBottom: 12,
-  },
-  heading: {
-    fontSize: 20,
-    fontWeight: '700',
-    marginTop: 16,
-    marginBottom: 8,
-    color: '#222',
-  },
-  subHeading: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginTop: 12,
-    marginBottom: 6,
-    color: '#444',
-  },
-  paragraph: {
-    fontSize: 16,
-    lineHeight: 22,
-    color: '#333',
-  },
-  bulletContainer: {
-    marginLeft: 12,
-    marginBottom: 12,
-  },
-  bullet: {
-    fontSize: 16,
-    color: '#333',
-    marginBottom: 4,
-  },
-});

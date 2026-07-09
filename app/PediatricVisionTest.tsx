@@ -1,5 +1,9 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, ScrollView } from 'react-native';
+import { useRouter } from 'expo-router';
+import BackChevron from '../components/BackChevron';
+import { useResponsiveLayout } from '../hooks/useResponsiveLayout';
+import styles from './styles/PediatricVisionTestStyles';
 
 const symbolGroups = [
   ['★', '●', '■', '♥︎'],
@@ -14,8 +18,25 @@ const symbolGroups = [
 const fontSizes = [72, 60, 48, 36, 24,  18, 14]; // decreasing sizes
 
 export default function PediatricVisionTest() {
+  const router = useRouter();
+  const { contentMaxWidth, contentWidth, isTiny, screenPadding } = useResponsiveLayout();
+
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView
+      contentContainerStyle={[
+        styles.container,
+        {
+          paddingBottom: isTiny ? 112 : 128,
+          paddingHorizontal: screenPadding,
+          paddingTop: isTiny ? 66 : 76,
+        },
+      ]}
+    >
+      <BackChevron
+        onPress={() => router.back()}
+        style={{ left: screenPadding, position: 'absolute', top: isTiny ? 10 : 16 }}
+      />
+      <View style={{ maxWidth: contentMaxWidth, width: '100%' }}>
       <Text style={styles.instruction}>
         Hold your phone at about 10 feet (3 meters) from your eyes.
       </Text>
@@ -23,37 +44,13 @@ export default function PediatricVisionTest() {
       {symbolGroups.map((group, idx) => (
         <View key={idx} style={styles.symbolRow}>
           {group.map((symbol, i) => (
-            <Text key={i} style={[styles.symbol, { fontSize: fontSizes[idx] }]}>
+            <Text key={i} style={[styles.symbol, { fontSize: Math.min(fontSizes[idx], contentWidth / (isTiny ? 5.2 : 4.7)) }]}>
               {symbol}
             </Text>
           ))}
         </View>
       ))}
+      </View>
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    padding: 20,
-    alignItems: 'center',
-    backgroundColor: '#fff',
-  },
-  instruction: {
-    fontSize: 16,
-    marginBottom: 20,
-    color: '#0a4a7d',
-    textAlign: 'center',
-  },
-  symbolRow: {
-    flexDirection: 'row',
-    marginBottom: 30,
-    justifyContent: 'space-around',
-    width: '100%',
-  },
-  symbol: {
-    fontWeight: 'bold',
-    color: '#222',
-    marginHorizontal: 10,
-  },
-});

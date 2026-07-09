@@ -1,84 +1,107 @@
 // app/styles/quizStyles.ts
 import { StyleSheet } from 'react-native';
+import { colors, radius, spacing } from '../../constants/theme';
 
 const quizStyles = StyleSheet.create({
+  safeArea: {
+    backgroundColor: colors.background,
+    flex: 1,
+  },
   container: {
-    padding: 16,
-    paddingBottom: 32,
-    backgroundColor: '#fff',
+    backgroundColor: colors.background,
+    flexGrow: 1,
+    paddingBottom: spacing.xl,
+  },
+  content: {
+    width: '100%',
   },
   title: {
-    fontSize: 25,
-    fontWeight: 'bold',
-    marginBottom: 8,
+    color: colors.ink,
+    fontSize: 26,
+    fontWeight: '600',
+    letterSpacing: 0,
     textAlign: 'center',
-    color: '#003366',
-    marginTop: 5,
-  
+  },
+  headerRow: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: spacing.sm,
+    minWidth: 0,
+    position: 'relative',
   },
   subtitle: {
+    color: colors.muted,
     fontSize: 15,
-    marginBottom: 8,
+    lineHeight: 21,
+    marginBottom: spacing.lg,
     textAlign: 'center',
-    color: '#003366',
-    marginTop: 5,
   },
 
   input: {
+    backgroundColor: colors.card,
+    borderColor: colors.border,
     borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 12,
+    borderRadius: radius.md,
+    color: colors.ink,
+    fontSize: 16,
+    marginBottom: spacing.md,
+    padding: 14,
   },
   questionContainer: {
-    marginBottom: 18,
+    marginBottom: spacing.lg,
   },
   questionText: {
-    fontSize: 16,
-    marginBottom: 8,
+    color: colors.ink,
+    fontSize: 15,
+    fontWeight: '600',
+    lineHeight: 22,
+    marginBottom: spacing.sm,
   },
   optionsRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 8,
+    gap: spacing.xs,
   },
   optionButton: {
+    backgroundColor: colors.primarySoft,
+    borderRadius: radius.pill,
+    paddingHorizontal: 13,
     paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderWidth: 1,
-    borderColor: '#888',
-    borderRadius: 6,
-    marginRight: 8,
-    marginBottom: 8,
   },
   optionButtonSelected: {
-    backgroundColor: '#4fa9f6',
-    borderColor: '#007AFF',
+    backgroundColor: colors.primary,
   },
   optionText: {
-    color: '#000',
+    color: colors.primaryDark,
+    fontSize: 13,
+    fontWeight: '500',
   },
   optionTextSelected: {
-    color: '#fff',
+    color: colors.card,
   },
   submitButton: {
-    backgroundColor: '#4fa9f6',
-    paddingVertical: 12,
-    borderRadius: 8,
     alignItems: 'center',
-    marginTop: 10,
+    backgroundColor: colors.primary,
+    borderRadius: radius.pill,
+    marginTop: spacing.md,
+    paddingVertical: 14,
   },
   submitButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
+    color: colors.card,
     fontSize: 16,
+    fontWeight: '700',
   },
-   backButton: {
-    backgroundColor: 'white',
-    marginTop: 30,
+  skipButton: {
+    position: 'absolute',
+    right: 0,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
   },
-
+  skipText: {
+    color: colors.primaryDark,
+    fontSize: 15,
+    fontWeight: '500',
+  },
 });
 
 export default quizStyles;

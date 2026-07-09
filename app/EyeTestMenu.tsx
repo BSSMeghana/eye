@@ -1,68 +1,97 @@
 // app/EyeTestMenu.tsx
-import React, { useEffect } from 'react'; 
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import * as Speech from 'expo-speech';
+import React, { useEffect } from 'react';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { useVoice } from '../context/VoiceProvider';
+import { useResponsiveLayout } from '../hooks/useResponsiveLayout';
+import styles from './styles/MenuStyles';
+
+interface VisionTestOption {
+  label: string;
+  route: '/DistanceVisionTest' | '/NearVisionTest' | '/PediatricVisionTest' | '/EyeColor';
+}
+
+const VISION_TEST_OPTIONS: VisionTestOption[] = [
+  { label: 'Distance Vision Test', route: '/DistanceVisionTest' },
+  { label: 'Near Vision Test', route: '/NearVisionTest' },
+  { label: 'Pediatric Vision Test', route: '/PediatricVisionTest' },
+  { label: 'Color Test', route: '/EyeColor' },
+];
 
 export default function EyeTestMenu() {
   const router = useRouter();
+  const {
+    contentMaxWidth,
+    height,
+    isCompact,
+    isLargePhone,
+    isTiny,
+    screenPadding,
+  } = useResponsiveLayout();
 
-   useEffect(() => {
-      Speech.speak("Testing");
-    
-      return () => {
-        Speech.stop();  // stops any ongoing speech when unmounting
-      };
-    }, []);
+  const { voiceEnabled } = useVoice();
+
+  useEffect(() => {
+    if (voiceEnabled) {
+      Speech.speak('Testing');
+    } else {
+      Speech.stop();
+    }
+
+    return () => {
+      Speech.stop();
+    };
+  }, [voiceEnabled]);
+
+  const titleStyle = [
+    styles.title,
+    isCompact && styles.titleCompact,
+    isLargePhone && styles.titleLarge,
+  ];
+
+  const buttonStyle = [
+    styles.button,
+    isCompact && styles.buttonCompact,
+    isLargePhone && styles.buttonLarge,
+  ];
+
+  const buttonTextStyle = [
+    styles.buttonText,
+    isTiny && styles.buttonTextCompact,
+    isLargePhone && styles.buttonTextLarge,
+  ];
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Select Vision Test</Text>
+    <ScrollView
+      contentContainerStyle={[
+        styles.container,
+        styles.scrollContainer,
+        {
+          minHeight: height,
+          paddingBottom: isTiny ? 104 : 120,
+          paddingHorizontal: screenPadding,
+          paddingTop: isTiny ? 18 : 28,
+        },
+      ]}
+      showsVerticalScrollIndicator={false}
+    >
+      <View style={[styles.menuContent, { maxWidth: contentMaxWidth }]}>
+        <Text style={titleStyle}>Select Vision Test</Text>
 
-      <TouchableOpacity style={styles.button} onPress={() => router.push('/DistanceVisionTest')}>
-        <Text style={styles.buttonText}>Distance Vision Test</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.button} onPress={() => router.push('/NearVisionTest')}>
-        <Text style={styles.buttonText}>Near Vision Test</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.button} onPress={() => router.push('/PediatricVisionTest')}>
-        <Text style={styles.buttonText}>Pediatric Vision Test</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.button} onPress={() => router.push('/EyeColor')}>
-        <Text style={styles.buttonText}>Color Test</Text>
-      </TouchableOpacity>
-    </View>
+        {VISION_TEST_OPTIONS.map((option) => (
+          <TouchableOpacity
+            key={option.route}
+            style={buttonStyle}
+            onPress={() => router.push(option.route)}
+            activeOpacity={0.78}
+            accessibilityRole="button"
+            accessibilityLabel={option.label}
+          >
+            <Text style={buttonTextStyle}>{option.label}</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+    </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex:1,
-    justifyContent:'center',
-    alignItems:'center',
-    padding: 20,
-    backgroundColor: '#fff',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 30,
-    color: '#064578',
-  },
-  button: {
-    backgroundColor: '#4fa9f6',
-    paddingVertical: 14,
-    paddingHorizontal: 20,
-    borderRadius: 30,
-    marginVertical: 10,
-    width: '80%',
-  },
-  buttonText: {
-    color: 'white',
-    fontSize: 18,
-    textAlign: 'center',
-    fontWeight: '600',
-  },
-});

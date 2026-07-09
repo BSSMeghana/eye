@@ -1,77 +1,121 @@
-import React, { useEffect } from 'react'; 
-import { View, Text, ScrollView, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Speech from 'expo-speech';
+import { useRouter } from 'expo-router';
+import React, { useEffect } from 'react';
+import { ScrollView, Text, View } from 'react-native';
+import BackChevron from '../components/BackChevron';
+import { useVoice } from '../context/VoiceProvider';
+import { useResponsiveLayout } from '../hooks/useResponsiveLayout';
+import styles from './styles/AboutStyles';
 
 export default function About() {
+  const router = useRouter();
+  const {
+    contentMaxWidth,
+    height,
+    isCompact,
+    isLargePhone,
+    isTiny,
+    screenPadding,
+  } = useResponsiveLayout();
+  const { voiceEnabled } = useVoice();
 
   useEffect(() => {
-      Speech.speak("About app");
-    
-      return () => {
-        Speech.stop();  // stops any ongoing speech when unmounting
-      };
-    }, []);
+    if (voiceEnabled) {
+      Speech.speak('About');
+    } else {
+      Speech.stop();
+    }
+
+    return () => {
+      Speech.stop();
+    };
+  }, [voiceEnabled]);
+
+  const titleStyle = [
+    styles.title,
+    isCompact && styles.titleCompact,
+    isLargePhone && styles.titleLarge,
+  ];
+  const paragraphStyle = [
+    styles.paragraph,
+    isCompact && styles.paragraphCompact,
+    isLargePhone && styles.paragraphLarge,
+  ];
+  const bulletStyle = [
+    styles.bullet,
+    isCompact && styles.bulletCompact,
+    isLargePhone && styles.bulletLarge,
+  ];
+
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <ScrollView contentContainerStyle={styles.container}>
-        <Text style={styles.title}>ABOUT DRUSHTI</Text>
-        
-        <Text style={styles.paragraph}>
-          <Text style={styles.bold}>Drushti</Text> is an AI-powered mobile application designed to screen for common eye conditions like{" "}
-          <Text style={styles.italic}>Cataract, Diabetic Retinopathy</Text>, and <Text style={styles.italic}>Glaucoma</Text> using a smartphone camera and flashlight.
-        </Text>
+    <View style={styles.safeArea}>
+      <ScrollView
+        contentContainerStyle={[
+          styles.container,
+          {
+            minHeight: height,
+            paddingBottom: isTiny ? 104 : 120,
+            paddingHorizontal: screenPadding,
+            paddingTop: isTiny ? 18 : 28,
+          },
+        ]}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={{ maxWidth: contentMaxWidth, width: '100%' }}>
+          <View style={styles.header}>
+            <BackChevron onPress={() => router.back()} />
+            <Text style={titleStyle}>
+              About
+            </Text>
+            <View style={styles.headerSpacer} />
+          </View>
 
-        <Text style={styles.paragraph}>The app also includes useful tools such as:</Text>
+          <Text style={paragraphStyle}>
+            <Text style={styles.bold}>Drushti</Text> is an AI-powered mobile application
+            built to screen for common eye conditions such as{' '}
+            <Text style={styles.italic}>Cataract</Text>,{' '}
+            <Text style={styles.italic}>Diabetic Retinopathy</Text>, and{' '}
+            <Text style={styles.italic}>Glaucoma</Text>—using your smartphone camera and
+            flashlight.
+          </Text>
 
-        <View style={styles.bulletContainer}>
-          <Text style={styles.bullet}>• Vision Tests – for distance, near, and color vision</Text>
-          <Text style={styles.bullet}>• Home Care – basic remedies and precautions for eye discomfort</Text>
-          <Text style={styles.bullet}>• News & Events – updates on eye health awareness, medical camps, and community initiatives</Text>
-          <Text style={styles.bullet}>• Games – to promote daily eye exercise, especially for kids</Text>
+          <Text style={paragraphStyle}>
+            A standout feature of Drushti is its ability to{' '}
+            <Text style={styles.highlight}>analyze retina images in real-time</Text>. If
+            the image is not clear, the app smartly notifies the user and avoids false
+            diagnoses.
+          </Text>
+
+          <Text style={paragraphStyle}>
+            Additional features include:
+          </Text>
+
+          <View style={styles.bulletContainer}>
+            <Text style={bulletStyle}>
+              • <Text style={styles.bold}>Vision Tests</Text> – distance, near, and color
+              vision
+            </Text>
+            <Text style={bulletStyle}>
+              • <Text style={styles.bold}>Home Care</Text> – simple remedies for daily eye
+              wellness
+            </Text>
+            <Text style={bulletStyle}>
+              • <Text style={styles.bold}>News & Events</Text> – latest on eye health
+              awareness and programs
+            </Text>
+            <Text style={bulletStyle}>
+              • <Text style={styles.bold}>Eye Games</Text> – fun exercises for kids to
+              train eye muscles
+            </Text>
+          </View>
+
+          <Text style={paragraphStyle}>
+            Drushti works <Text style={styles.highlight}>entirely offline</Text>, supports{' '}
+            <Text style={styles.highlight}>low-end Android devices</Text>, and is friendly
+            even for <Text style={styles.highlight}>non-specialists</Text>.
+          </Text>
         </View>
-
-        <Text style={styles.paragraph}>
-          Drushti works offline, supports low-end Android devices, and provides quick, user-friendly screening—even for non-specialists.
-        </Text>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
-
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  container: {
-    padding: 20,
-  },
-  title: {
-   fontSize: 25,
-    fontWeight: 'bold',
-    color: '#064578',
-    textAlign: 'center',
-    marginBottom: 12,
-  },
-  paragraph: {
-    fontSize: 16,
-    marginBottom: 12,
-    color: '#333',
-    lineHeight: 22,
-  },
-  bulletContainer: {
-    marginBottom: 12,
-  },
-  bullet: {
-    fontSize: 16,
-    marginBottom: 6,
-    color: '#333',
-  },
-  bold: {
-    fontWeight: 'bold',
-  },
-  italic: {
-    fontStyle: 'italic',
-  },
-});

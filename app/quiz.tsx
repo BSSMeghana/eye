@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
-import quizStyles from './styles/quizStyles';
 import * as Speech from 'expo-speech';
+import React, { useEffect, useState } from 'react';
+import { Alert, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { colors } from '../constants/theme';
+import { useVoice } from '../context/VoiceProvider';
+import { useResponsiveLayout } from '../hooks/useResponsiveLayout';
+import quizStyles from './styles/quizStyles';
 
 const eyeQuestions: string[] = [
   "Do you feel pain or discomfort in or around your eyes?",
@@ -16,18 +18,22 @@ const options: string[] = ['Yes', 'No', 'Sometimes', 'Not Sure'];
 
 export default function QuizScreen() {
   const router = useRouter();
+  const { contentMaxWidth, isTiny, screenPadding } = useResponsiveLayout();
   const [name, setName] = useState('');
   const [age, setAge] = useState('');
-  const [profession, setProfession] = useState('');
   const [answers, setAnswers] = useState<{ [key: number]: string }>({});
 
-  useEffect(() => {
-  Speech.speak("take a quick eye quiz or directly skip");
+  const { voiceEnabled } = useVoice();
 
-  return () => {
-    Speech.stop();  // stops any ongoing speech when unmounting
-  };
-}, []);
+  useEffect(() => {
+    if (voiceEnabled) {
+      Speech.speak("Take a quiz or directly skip");
+    }
+
+    return () => {
+      Speech.stop();
+    };
+  }, [voiceEnabled]);
 
   const handleAnswer = (index: number, answer: string) => {
     setAnswers(prev => ({ ...prev, [index]: answer }));
@@ -36,7 +42,6 @@ export default function QuizScreen() {
   const isFormComplete =
     name.trim() !== '' &&
     age.trim() !== '' &&
-    profession.trim() !== '' &&
     Object.keys(answers).length === eyeQuestions.length;
 
   const handleSubmit = () => {
@@ -54,49 +59,66 @@ export default function QuizScreen() {
 
     setName('');
     setAge('');
-    setProfession('');
     setAnswers({});
   };
 
   return (
-    <ScrollView contentContainerStyle={quizStyles.container}>
-      
- <TouchableOpacity
-  style={quizStyles.backButton}
-  onPress={() => router.replace('./Intro')}>
-  <Ionicons name="arrow-back" size={24} color="#007AFF" />
-</TouchableOpacity>
-      <Text style={quizStyles.title}>DRUSHTI</Text>
-      <Text style={quizStyles.subtitle}>let's take a quick eye quiz!</Text>
+    <View style={quizStyles.safeArea}>
+      <ScrollView
+        contentContainerStyle={[
+          quizStyles.container,
+          {
+            alignItems: 'center',
+            paddingHorizontal: Math.max(screenPadding, 24),
+            paddingTop: Math.max(screenPadding, 18),
+          },
+        ]}
+      >
+      <View style={[quizStyles.content, { maxWidth: contentMaxWidth }]}>
+      <View style={quizStyles.headerRow}>
+        <Text
+          numberOfLines={1}
+          adjustsFontSizeToFit
+          minimumFontScale={0.82}
+          style={[quizStyles.title, isTiny && { fontSize: 24 }]}
+        >
+          DRUSHTI
+        </Text>
+        <TouchableOpacity
+          style={quizStyles.skipButton}
+          onPress={() => router.replace('/')}
+        >
+          <Text style={quizStyles.skipText}>Skip</Text>
+        </TouchableOpacity>
+      </View>
+      <Text style={quizStyles.subtitle}>A quick check-in before you begin.</Text>
 
       <TextInput
         style={quizStyles.input}
         placeholder="Name"
-        placeholderTextColor="gray"
+        placeholderTextColor={colors.muted}
         value={name}
         onChangeText={setName}
       />
       <TextInput
         style={quizStyles.input}
         placeholder="Age"
-        placeholderTextColor="gray"
+        placeholderTextColor={colors.muted}
         value={age}
         onChangeText={setAge}
         keyboardType="numeric"
       />
-
 
       {eyeQuestions.map((question, i) => (
         <View key={i} style={quizStyles.questionContainer}>
           <Text style={quizStyles.questionText}>{question}</Text>
           <View style={quizStyles.optionsRow}>
             {options.map(option => {
-              const val = option.toLowerCase().replace(' ', '_');
-              const selected = answers[i] === val;
+              const selected = answers[i] === option;
               return (
                 <TouchableOpacity
                   key={option}
-                  onPress={() => handleAnswer(i, val)}
+                  onPress={() => handleAnswer(i, option)}
                   style={[
                     quizStyles.optionButton,
                     selected && quizStyles.optionButtonSelected,
@@ -113,19 +135,14 @@ export default function QuizScreen() {
       ))}
 
       <TouchableOpacity
-        style={[quizStyles.submitButton, !isFormComplete && { backgroundColor: '#ccc' }]}
+        style={[quizStyles.submitButton, !isFormComplete && { backgroundColor: colors.border }]}
         onPress={handleSubmit}
         disabled={!isFormComplete}
       >
         <Text style={quizStyles.submitButtonText}>Submit Quiz</Text>
       </TouchableOpacity>
-
-      <TouchableOpacity
-        style={[quizStyles.submitButton, { backgroundColor: '#4fa9f6', marginTop: 10 }]}
-        onPress={() => router.replace('/')}
-      >
-        <Text style={[quizStyles.submitButtonText, { color: 'white' }]}>Skip Quiz</Text>
-      </TouchableOpacity>
-    </ScrollView>
+      </View>
+      </ScrollView>
+    </View>
   );
 }

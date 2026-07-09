@@ -4,14 +4,14 @@
     "slug": "eye",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/eyeand.png",
+    "icon": "./assets/images/appicon7.png",
     "scheme": "eye",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
       "foregroundImage": "./assets/images/eyeios.png",
-      "backgroundColor": "#3a8dde",
+      "backgroundColor": "#dceaff",
       "bundleIdentifier": "com.meghana2002.eye",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
@@ -19,8 +19,8 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/eyeand.png",
-        "backgroundColor": "#3a8dde"
+        "foregroundImage": "./assets/images/appicon7.png",
+        "backgroundColor": "#dceaff"
       },
       "edgeToEdgeEnabled": true,
       "package": "com.meghana2002.eye"
@@ -35,7 +35,7 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
+          "image": "./assets/images/appicon7.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"

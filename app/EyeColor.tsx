@@ -1,5 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { useRouter } from 'expo-router';
+import BackChevron from '../components/BackChevron';
+import { spacing } from '../constants/theme';
+import { useResponsiveLayout } from '../hooks/useResponsiveLayout';
+import styles from './styles/EyeColorStyles';
 
 const colorPlates = [
   require('../assets/images/img1.png'),
@@ -12,7 +17,33 @@ const colorPlates = [
 ];
 
 const EyeColor: React.FC = () => {
+  const router = useRouter();
+  const {
+    contentMaxWidth,
+    contentWidth,
+    height,
+    isCompact,
+    isLargePhone,
+    isTiny,
+    screenPadding,
+  } = useResponsiveLayout();
   const [currentIndex, setCurrentIndex] = useState(0);
+  const plateSize = Math.min(contentWidth, height * (isTiny ? 0.42 : 0.48), 340);
+  const instructionStyle = [
+    styles.instruction,
+    isCompact && styles.instructionCompact,
+    isLargePhone && styles.instructionLarge,
+  ];
+  const buttonStyle = [
+    styles.button,
+    isCompact && styles.buttonCompact,
+    isLargePhone && styles.buttonLarge,
+  ];
+  const buttonTextStyle = [
+    styles.buttonText,
+    isCompact && styles.buttonTextCompact,
+    isLargePhone && styles.buttonTextLarge,
+  ];
 
   const handleNext = () => {
     if (currentIndex < colorPlates.length - 1) {
@@ -21,68 +52,52 @@ const EyeColor: React.FC = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.instruction}>Observe the plate and tap Next to continue</Text>
-      <View style={styles.letterContainer}>
-        <Image source={colorPlates[currentIndex]} style={[styles.letter, { width: 300, height: 300 }]} resizeMode="contain" />
-      </View>
-
-      {currentIndex < colorPlates.length - 1 ? (
-        <View style={styles.buttonsContainer}>
-          <TouchableOpacity style={styles.button} onPress={handleNext}>
-            <Text style={styles.buttonText}>Next</Text>
-          </TouchableOpacity>
+    <ScrollView
+      contentContainerStyle={[
+        styles.container,
+        {
+          minHeight: height,
+          paddingBottom: isTiny ? 112 : 128,
+          paddingHorizontal: screenPadding,
+          paddingTop: isTiny ? 38 : isCompact ? 46 : 56,
+        },
+      ]}
+      showsVerticalScrollIndicator={false}
+    >
+      <BackChevron
+        onPress={() => router.back()}
+        style={{ left: screenPadding, position: 'absolute', top: isTiny ? 10 : 16 }}
+      />
+      <View style={[styles.content, { maxWidth: contentMaxWidth }]}>
+        <Text style={instructionStyle}>Observe the plate and tap Next to continue</Text>
+        <View style={styles.letterContainer}>
+          <Image
+            source={colorPlates[currentIndex]}
+            style={[styles.letter, { width: plateSize, height: plateSize }]}
+            resizeMode="contain"
+          />
         </View>
-      ) : (
-        <Text style={{ marginBottom: 50, fontSize: 16, color: 'green' }}>
-          You've reached the end of the test.
-        </Text>
-      )}
-    </View>
+
+        {currentIndex < colorPlates.length - 1 ? (
+          <View style={styles.buttonsContainer}>
+            <TouchableOpacity
+              style={buttonStyle}
+              onPress={handleNext}
+              activeOpacity={0.78}
+              accessibilityRole="button"
+              accessibilityLabel="Next color test plate"
+            >
+              <Text style={buttonTextStyle}>Next</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <Text style={[styles.completedText, { marginBottom: isTiny ? spacing.lg : 50 }]}>
+            You have reached the end of the test.
+          </Text>
+        )}
+      </View>
+    </ScrollView>
   );
 };
 
 export default EyeColor;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: 'white',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-  },
-  instruction: {
-    fontSize: 16,
-    marginBottom: 40,
-    color: '#064578',
-  },
-  letterContainer: {
-    flex: 1,
-    justifyContent: 'center',
-  },
-  letter: {
-    fontWeight: 'bold',
-    color: 'black',
-    width: 300,
-  height: 300,
-  borderRadius: 10,
-  },
-  buttonsContainer: {
-    flexDirection: 'row',
-    marginBottom: 50,
-    gap: 20,
-  },
-  button: {
-    backgroundColor: '#4fa9f6',
-    paddingVertical: 14,
-    paddingHorizontal: 32,
-    borderRadius: 30,
-    marginHorizontal: 10,
-  },
-  buttonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-});

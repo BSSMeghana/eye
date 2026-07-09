@@ -1,58 +1,37 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet } from 'react-native';
+import { Image, ImageSourcePropType, Text, View } from 'react-native';
+import { useResponsiveLayout } from '../hooks/useResponsiveLayout';
+import styles from './styles/PostStyles';
 
 interface PostProps {
   title: string;
   date: string;
   category: string;
   summary: string;
-  image?: string; // Optional
+  image?: ImageSourcePropType | string;
 }
 
 export default function Post({ title, date, category, summary, image }: PostProps) {
+  const { isCompact, isLargePhone, isTiny } = useResponsiveLayout();
+  const imageSource = typeof image === 'string' ? { uri: image } : image;
+
   return (
-    <View style={styles.postContainer}>
-      {image && (
-        <Image source={{ uri: image }} style={styles.postImage} resizeMode="cover" />
+    <View style={[styles.postContainer, isCompact && styles.compactContainer, isLargePhone && styles.largeContainer]}>
+      {imageSource && (
+        <Image
+          source={imageSource}
+          style={[
+            styles.postImage,
+            isCompact && styles.compactImage,
+            isTiny && styles.tinyImage,
+            isLargePhone && styles.largeImage,
+          ]}
+          resizeMode="cover"
+        />
       )}
-      <Text style={styles.postTitle}>{title}</Text>
-      <Text style={styles.postMeta}>{date} | {category}</Text>
-      <Text style={styles.postSummary}>{summary}</Text>
+      <Text style={[styles.postMeta, isTiny && styles.compactMeta]}>{category} - {date}</Text>
+      <Text style={[styles.postTitle, isCompact && styles.compactTitle]}>{title}</Text>
+      <Text style={[styles.postSummary, isCompact && styles.compactSummary]}>{summary}</Text>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  postContainer: {
-    marginBottom: 20,
-    padding: 12,
-    backgroundColor: '#f9f9f9',
-    borderRadius: 8,
-    elevation: 2, // For shadow on Android
-    shadowColor: '#000', // For shadow on iOS
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-  },
-  postImage: {
-    width: '100%',
-    height: 180,
-    borderRadius: 8,
-    marginBottom: 12,
-  },
-  postTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: 'black',
-    marginBottom: 4,
-  },
-  postMeta: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 8,
-  },
-  postSummary: {
-    fontSize: 16,
-    color: '#333',
-  },
-});

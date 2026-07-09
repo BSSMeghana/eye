@@ -6,25 +6,34 @@ import * as ImagePicker from 'expo-image-picker';
 import * as Print from 'expo-print';
 import { useRouter } from 'expo-router';
 import * as Sharing from 'expo-sharing';
-import React, { useRef, useState, useEffect } from 'react';
-import { Modal, Pressable, TouchableOpacity } from 'react-native';
-import UploadStyles from './styles/UploadStyles';
 import * as Speech from 'expo-speech';
-import {ActivityIndicator,Alert,Animated,Button,Image,Text,View,} from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { ActivityIndicator, Alert, Animated, Image, Modal, Pressable, ScrollView, Text, View } from 'react-native';
+import BackChevron from '../components/BackChevron';
+import { colors } from '../constants/theme';
+import { useVoice } from '../context/VoiceProvider';
+import { useResponsiveLayout } from '../hooks/useResponsiveLayout';
+import UploadStyles from './styles/UploadStyles';
 
 export default function UploadScreen() {
   const router = useRouter();
+  const { contentMaxWidth, contentWidth, isCompact, isLargePhone, isTiny, screenPadding } = useResponsiveLayout();
 
-  useEffect(() => {
-    Speech.speak("Upload");
+ const { voiceEnabled } = useVoice();
   
+    useEffect(() => {
+    if (voiceEnabled) {
+      Speech.speak("Upload");
+    } else {
+      Speech.stop();
+    }
+    // Cleanup also stops speech if component unmounts
     return () => {
-      Speech.stop();  // stops any ongoing speech when unmounting
+      Speech.stop();
     };
-  }, []);
+  }, [voiceEnabled]);
 
   const [imageUri, setImageUri] = useState<string | null>(null);
-  const [pdfUri, setPdfUri] = useState<string | null>(null);
   const [result, setResult] = useState<{
     model: string;
     name: string;
@@ -75,7 +84,6 @@ export default function UploadScreen() {
       // Clear old results & image before new upload
       setImageUri(uri);
       setResult(null);
-      setPdfUri(null);
 
       Animated.timing(instructionOpacity, {
         toValue: 0,
@@ -109,7 +117,6 @@ export default function UploadScreen() {
 
       setImageUri(uri);
       setResult(null);
-      setPdfUri(null);
 
       Animated.timing(instructionOpacity, {
         toValue: 0,
@@ -140,7 +147,7 @@ export default function UploadScreen() {
 
     try {
       const response = await axios.post(
-        'https://873f-2401-4900-8fcc-e5f5-100b-19d2-37bc-2a90.ngrok-free.app/predict',
+        'https://9ffa742da86a.ngrok-free.app/predict',
         formData,
         {
           headers: {
@@ -179,13 +186,13 @@ export default function UploadScreen() {
     const dateStr = currentDate.toLocaleDateString();
     const timeStr = currentDate.toLocaleTimeString();
 
-    const logoAsset = Asset.fromModule(require('../assets/images/eyeand.png'));
+    const logoAsset = Asset.fromModule(require('../assets/images/appicon6.png'));
     await logoAsset.downloadAsync();
     const logoBase64 = await FileSystem.readAsStringAsync(logoAsset.localUri || logoAsset.uri, {
-      encoding: FileSystem.EncodingType.Base64,
+      encoding: 'base64',
     });
     const uploadedImageBase64 = await FileSystem.readAsStringAsync(imageUri, {
-      encoding: FileSystem.EncodingType.Base64,
+      encoding: 'base64',
     });
 
 const logoDataUrl = `data:image/png;base64,${logoBase64}`;
@@ -199,18 +206,19 @@ const uploadedDataUrl = `data:image/jpeg;base64,${uploadedImageBase64}`;
             body {
               font-family: Arial, sans-serif;
               padding: 24px;
-              color: #222;
+              color: #0e2b64;
               position: relative;
+              background: #ffffff;
             }
-            h1 { color: #1e90ff; }
+            h1 { color: #2f74d6; }
             p { font-size: 16px; margin: 6px 0; }
-            strong { color: #333; }
+            strong { color: #163b88; }
             .logo { width: 120px; margin-bottom: 20px; border-radius: 12px; }
             .section { margin-top: 15px; }
             .uploaded-image { margin-top: 20px; }
-            .uploaded-image img { width: 250px; height: auto; border-radius: 10px; }
+            .uploaded-image img { width: 250px; height: auto; border-radius: 10px; border: 1px solid #d8e5fa; }
             .issued { margin-top: 30px; }
-            .disclaimer, .footer { font-size: 14px; margin-top: 20px; color: #666; }
+            .disclaimer, .footer { font-size: 14px; margin-top: 20px; color: #5f718f; }
             .note { font-style: italic; margin-top: 10px; }
 
             .watermark {
@@ -226,6 +234,7 @@ const uploadedDataUrl = `data:image/jpeg;base64,${uploadedImageBase64}`;
         </head>
         <body>
           <div class="watermark">DRUSHTI REPORT</div>
+          <img class="logo" src="${logoDataUrl}" alt="Drushti logo" />
           <h1>Eye Disease Detection Report</h1>
 
           <div class="uploaded-image">
@@ -262,30 +271,68 @@ const uploadedDataUrl = `data:image/jpeg;base64,${uploadedImageBase64}`;
     `;
 
     const { uri } = await Print.printToFileAsync({ html });
-    setPdfUri(uri);
     await Sharing.shareAsync(uri);
   };
 
   return (
-    <View style={UploadStyles.container}>
-      <TouchableOpacity style={UploadStyles.backButton} onPress={() => router.push('/')} disabled={loading}>
-        <Ionicons name="arrow-back" size={28} color={loading ? '#ccc' : '#007AFF'} />
-      </TouchableOpacity>
-      <Text style={UploadStyles.title}>UPLOAD IMAGE</Text>
+    <ScrollView
+      alwaysBounceVertical={false}
+      contentContainerStyle={[
+        UploadStyles.container,
+        {
+          paddingBottom: isTiny ? 104 : 120,
+          paddingHorizontal: screenPadding,
+          paddingTop: isTiny ? 8 : 16,
+        },
+      ]}
+      keyboardShouldPersistTaps="handled"
+      showsVerticalScrollIndicator={false}
+    >
+      <View style={[UploadStyles.content, { maxWidth: contentMaxWidth }]}>
+      <View style={UploadStyles.header}>
+        <BackChevron onPress={() => router.back()} />
+        <Text
+          numberOfLines={1}
+          style={[
+            UploadStyles.title,
+            isCompact && UploadStyles.titleCompact,
+            isLargePhone && UploadStyles.titleLarge,
+          ]}
+        >
+          Upload Retina Image
+        </Text>
+        <View style={UploadStyles.headerSpacer} />
+      </View>
 
       {instructionVisible && (
-        <Animated.Image
-          source={require('../assets/images/int.png')}
-          style={[UploadStyles.instructionImage, { opacity: instructionOpacity }]}
-          resizeMode="contain"
-        />
+        <Animated.View style={[UploadStyles.instructionCard, { opacity: instructionOpacity }]}>
+          <View style={UploadStyles.instructionCopy}>
+            <Text style={[UploadStyles.instructionTitle, isTiny && UploadStyles.instructionTitleCompact]}>
+              Add a clear retina photo
+            </Text>
+            <Text style={UploadStyles.instructionText}>
+              Keep the eye centered, well lit, and free from blur or glare.
+            </Text>
+          </View>
+          <Image
+            source={require('../assets/images/int.png')}
+            style={[
+              UploadStyles.instructionImage,
+              { height: Math.min(contentWidth * (isTiny ? 0.62 : 0.7), isTiny ? 205 : 285) },
+            ]}
+            resizeMode="contain"
+          />
+        </Animated.View>
       )}
 
       {/* Only show image preview if there's an image and no error */}
       {imageUri && !errorMessage && (
         <View style={UploadStyles.previewWrapper}>
-          <Image source={{ uri: imageUri }} style={UploadStyles.previewImage} />
-          <Button title="Upload Image Again" onPress={() => uploadImage()} disabled={loading} />
+          <Image
+            source={{ uri: imageUri }}
+            style={[UploadStyles.previewImage, { height: Math.min(contentWidth * 0.62, 300) }]}
+            resizeMode="cover"
+          />
         </View>
       )}
 
@@ -299,31 +346,52 @@ const uploadedDataUrl = `data:image/jpeg;base64,${uploadedImageBase64}`;
         <View style={UploadStyles.modalOverlay}>
           <View style={UploadStyles.modalContent}>
             <Text style={UploadStyles.errorText}>{errorMessage}</Text>
-            <Button title="OK" onPress={() => setErrorMessage(null)} />
+            <Pressable style={UploadStyles.button} onPress={() => setErrorMessage(null)}>
+              <Text style={UploadStyles.buttonText}>OK</Text>
+            </Pressable>
           </View>
         </View>
       </Modal>
 
-      {loading && <ActivityIndicator size="large" color="#007AFF" style={{ marginVertical: 20 }} />}
+      {loading && <ActivityIndicator size="large" color={colors.primary} style={{ marginVertical: 20 }} />}
+      {loading && <Text style={UploadStyles.loadingText}>Analyzing retina image…</Text>}
 
       {result && (
         <View style={UploadStyles.resultContainer}>
-          <Text style={UploadStyles.resultText}>Result: {result.name}</Text>
-          <Text style={UploadStyles.resultText}>Confidence: {result.accuracy}</Text>
-          <Text style={UploadStyles.resultText}>Remedy: {result.remedy}</Text>
-          <Text style={UploadStyles.resultText}>Risk: {result.subject_risk}</Text>
-          <Button title="Share PDF Report" onPress={sharePDF} />
+          <View style={UploadStyles.resultHeading}>
+            <Ionicons name="checkmark-circle" size={24} color={colors.primary} />
+            <Text style={UploadStyles.resultTitle}>Analysis complete</Text>
+          </View>
+          <Text style={UploadStyles.resultLabel}>Result</Text>
+          <Text style={UploadStyles.resultText}>{result.name}</Text>
+          <Text style={UploadStyles.resultLabel}>Confidence</Text>
+          <Text style={UploadStyles.resultText}>{result.accuracy}</Text>
+          <Text style={UploadStyles.resultLabel}>Recommended remedy</Text>
+          <Text style={UploadStyles.resultText}>{result.remedy}</Text>
+          <Text style={UploadStyles.resultLabel}>Risk</Text>
+          <Text style={UploadStyles.resultText}>{result.subject_risk}</Text>
+          <Pressable style={[UploadStyles.button, UploadStyles.reportButton]} onPress={sharePDF}>
+            <Ionicons name="share-outline" size={20} color={colors.card} />
+            <Text style={UploadStyles.buttonText}>Share PDF Report</Text>
+          </Pressable>
         </View>
       )}
 
-      <View style={UploadStyles.buttonRow}>
-        <Pressable style={UploadStyles.button} onPress={pickImage} disabled={loading}>
-          <Text style={UploadStyles.buttonText}>Pick Image</Text>
+      <View style={[UploadStyles.buttonRow, isCompact && UploadStyles.buttonRowStacked]}>
+        <Pressable style={[UploadStyles.button, UploadStyles.buttonInRow]} onPress={pickImage} disabled={loading}>
+          <Ionicons name="images-outline" size={20} color={colors.card} />
+          <Text style={UploadStyles.buttonText}>{imageUri ? 'Choose Another' : 'Choose Photo'}</Text>
         </Pressable>
-        <Pressable style={UploadStyles.button} onPress={captureImage} disabled={loading}>
-          <Text style={UploadStyles.buttonText}>Capture Image</Text>
+        <Pressable
+          style={[UploadStyles.button, UploadStyles.buttonSecondary, UploadStyles.buttonInRow]}
+          onPress={captureImage}
+          disabled={loading}
+        >
+          <Ionicons name="camera-outline" size={20} color={colors.primary} />
+          <Text style={[UploadStyles.buttonText, UploadStyles.buttonSecondaryText]}>Take Photo</Text>
         </Pressable>
       </View>
-    </View>
+      </View>
+    </ScrollView>
   );
 }

@@ -1,151 +1,219 @@
-import React, { useEffect } from 'react'; 
-import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import ThreeDot from './ThreeDot';
-import Post from './Post';
-import indexStyles from './indexStyles';
 import * as Speech from 'expo-speech';
+import React, { useEffect } from 'react';
+import { ImageSourcePropType, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { colors, spacing } from '../constants/theme';
+import { useVoice } from '../context/VoiceProvider';
+import { useResponsiveLayout } from '../hooks/useResponsiveLayout';
+import Post from './Post';
+import ThreeDot from './ThreeDot';
+import indexStyles from './indexStyles';
+
+interface EyeCarePost {
+  title: string;
+  date: string;
+  category: string;
+  summary: string;
+  image: ImageSourcePropType;
+}
+
+interface HomeHeaderProps {
+  isCompact: boolean;
+  isLargePhone: boolean;
+  isTiny: boolean;
+  onToggleVoice: () => void;
+  voiceEnabled: boolean;
+}
+
+interface PostsSectionProps {
+  isCompact: boolean;
+  isLargePhone: boolean;
+  isTiny: boolean;
+  posts: EyeCarePost[];
+}
+
+const EYE_CARE_POSTS: EyeCarePost[] = [
+  {
+    title: "AP Starts AI Pilot for Diabetic Eye Screening",
+    date: "June 10, 2026",
+    category: "India",
+    summary:
+      "Andhra Pradesh has launched an AI-based pilot at Government General Hospitals to improve diabetic retinopathy screening and support faster referrals.",
+    image: require('../assets/images/DR.png'),
+  },
+  {
+    title: "AI Model Links Glaucoma Screening to Follow-Up",
+    date: "January 26, 2026",
+    category: "Research",
+    summary:
+      "Fair-Eye Net combines fundus photos, OCT, visual field data, and patient factors to support glaucoma screening, progression checks, and risk alerts.",
+    image: require('../assets/images/glaucoma.png'),
+  },
+  {
+    title: "3D OCT AI Shows Progress for Retinal Diagnosis",
+    date: "February 3, 2026",
+    category: "Technology",
+    summary:
+      "A foundation-model OCT workflow called FOCUS showed strong performance for image quality checks, abnormality detection, and multi-disease retinal diagnosis.",
+    image: require('../assets/images/img1.png'),
+  },
+  {
+    title: "Glaucoma Cases Expected to Rise Sharply",
+    date: "January 20, 2026",
+    category: "Public Health",
+    summary:
+      "New estimates warn glaucoma demand will grow as populations age, highlighting the need for routine eye checks and stronger diagnostic capacity.",
+    image: require('../assets/images/glaucoma.png'),
+  },
+  {
+    title: "Eye Videos May Help Screen for Anemia",
+    date: "May 26, 2026",
+    category: "Innovation",
+    summary:
+      "Researchers reported a noninvasive approach that films blood vessels in the eye and uses AI to flag possible anemia without a needle test.",
+    image: require('../assets/images/eyeand.png'),
+  },
+  {
+    title: "Bayer Expands Eye-Drug Pipeline",
+    date: "May 6, 2026",
+    category: "Treatment",
+    summary:
+      "Bayer agreed to acquire Perfuse Therapeutics, whose lead candidate targets glaucoma and diabetic retinopathy in mid-stage trials.",
+    image: require('../assets/images/cataract.png'),
+  },
+  {
+    title: "Mobile AI Screening Targets Five Eye Diseases",
+    date: "July 16, 2025",
+    category: "AI Screening",
+    summary:
+      "The InSight mobile screening pipeline combines retinal images and patient metadata to detect common eye diseases across smartphone and lab-captured images.",
+    image: require('../assets/images/img2.jpg'),
+  },
+  {
+    title: "AIIMS Diabetic Retinopathy App Moves Toward Scale",
+    date: "November 17, 2025",
+    category: "India",
+    summary:
+      "AIIMS and partners developed MadhuNETrAI, an AI screening app designed to flag diabetic retinopathy at primary and district health centers.",
+    image: require('../assets/images/DR.png'),
+  },
+];
+
+function HomeHeader({ isCompact, isLargePhone, isTiny, onToggleVoice, voiceEnabled }: HomeHeaderProps) {
+  return (
+    <View style={[indexStyles.header, isTiny && indexStyles.headerCompact]}>
+      <View style={indexStyles.headerSide} />
+
+      <View style={indexStyles.headerTitleWrap}>
+        <Text
+          style={[
+            indexStyles.title,
+            isCompact && indexStyles.titleCompact,
+            isLargePhone && indexStyles.titleLarge,
+          ]}
+        >
+          DRUSHTI
+        </Text>
+      </View>
+
+      <View style={indexStyles.headerActions}>
+        <TouchableOpacity
+          onPress={onToggleVoice}
+          style={indexStyles.headerIconButton}
+          accessibilityLabel={voiceEnabled ? "Turn off voice" : "Turn on voice"}
+          hitSlop={8}
+        >
+          <Ionicons
+            name={voiceEnabled ? "volume-high" : "volume-mute"}
+            size={isTiny ? 24 : 28}
+            color={colors.primary}
+          />
+        </TouchableOpacity>
+
+        <ThreeDot />
+      </View>
+    </View>
+  );
+}
+
+function PostsSection({ isCompact, isLargePhone, isTiny, posts }: PostsSectionProps) {
+  return (
+    <View style={[indexStyles.postsSection, isTiny && indexStyles.postsSectionCompact]}>
+      <Text
+        style={[
+          indexStyles.sectionTitle,
+          isCompact && indexStyles.sectionTitleCompact,
+          isLargePhone && indexStyles.sectionTitleLarge,
+        ]}
+      >
+        {"What's New in Eye Care"}
+      </Text>
+
+      {posts.map((post) => (
+        <Post
+          key={`${post.category}-${post.date}-${post.title}`}
+          title={post.title}
+          date={post.date}
+          category={post.category}
+          summary={post.summary}
+          image={post.image}
+        />
+      ))}
+    </View>
+  );
+}
 
 export default function Index() {
-  const router = useRouter();
+  const { contentMaxWidth, isCompact, isLargePhone, isTiny, screenPadding } = useResponsiveLayout();
 
-useEffect(() => {
-  Speech.speak("Home");
+  const { voiceEnabled, toggleVoice } = useVoice();
 
-  return () => {
-    Speech.stop();  // stops any ongoing speech when unmounting
-  };
-}, []);
+  useEffect(() => {
+    if (voiceEnabled) {
+      Speech.speak("Home");
+    } else {
+      Speech.stop();
+    }
 
-
-  const posts = [
-    {
-      title: "New AI Tech for Early Cataract Detection",
-      date: "May 20, 2025",
-      category: "Technology",
-      summary: "Researchers have developed an AI-powered system that detects cataracts with 95% accuracy using smartphone images.",
-      image: "https://www.theengineer.co.uk/media/juhfuzps/42-technology_neocam_right-first-time-image-capture.jpg?width=1002&height=564&v=1dbade75be9ef30",
-    },
-    {
-      title: "Community Eye Health Camp Announced",
-      date: "May 18, 2025",
-      category: "Event",
-      summary: "Join us for a free eye health screening camp focusing on diabetic retinopathy awareness on June 5th at City Hall.",
-      image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSqKXCUBIwC3ihMJvB3nz2YROTzKL0TWXpeLg&s",
-   
-    },
-    {
-      title: "Daily Eye Exercises for Glaucoma Patients",
-      date: "May 15, 2025",
-      category: "Social Activity",
-      summary: "Learn simple eye exercises designed to improve eye health and slow glaucoma progression.",
-      image: "https://www.aao.org/image.axd?id=15399d7c-3a23-4791-8c2a-b5af8def4482&t=636868199208170000",
-   
-    },
-    {
-  title: "Breakthrough Gene Therapy Restores Vision",
-  date: "May 10, 2025",
-  category: "Technology",
-  summary: "A new gene therapy shows promise in restoring partial vision in patients with inherited retinal diseases.",
-  image: "https://news.ufl.edu/media/newsufledu/images/2024/09/gene-wide.jpg",
-},
-{
-  title: "Mobile Eye Clinic Launches in Rural Andhra",
-  date: "May 12, 2025",
-  category: "Event",
-  summary: "A state-sponsored mobile van will provide free glaucoma and cataract screening in underserved villages.",
-  image: "https://www.sarkaritel.com/wp-content/uploads/2024/03/hpcl_csr.jpg",
-},
-{
-  title: "AI App Spots Retinopathy in Pregnant Women",
-  date: "May 8, 2025",
-  category: "Technology",
-  summary: "An AI app developed in India now helps screen for retinal issues in high-risk pregnancies using smartphone images.",
-  image: "https://www.reviewofoptometry.com/CMSImagesContent/2023/07/RO%20News/07122023%20NPDR.jpg",
-},
-{
-  title: "Eye Yoga Sessions Launched at IT Companies",
-  date: "May 4, 2025",
-  category: "Social Activity",
-  summary: "Companies adopt 10-minute eye yoga routines during work hours to combat digital eye strain.",
-  image: "https://images.onlymyhealth.com/imported/images/2024/April/29_Apr_2024/Main-yogaexercisesforeyes.jpg",
-},
-{
-  title: "World Glaucoma Day Celebrations at Sankar Foundation",
-  date: "March 12, 2025",
-  category: "Event",
-  summary: "Sankar Foundation hosted a mass awareness campaign with posters, screenings, and doctor talks.",
-  image: "https://sankarfoundation.org/wp-content/uploads/2024/03/Rally-1-1.jpg",
-},
-{
-  title: "Smart Contact Lenses Monitor Eye Pressure",
-  date: "May 1, 2025",
-  category: "Technology",
-  summary: "New wearable lenses track intraocular pressure in real time, offering hope for glaucoma patients.",
-  image: "https://assets.newatlas.com/dims4/default/7f2eb7b/2147483647/strip/true/crop/1205x678+0+63/resize/1200x675!/quality/90/?url=http%3A%2F%2Fnewatlas-brightspot.s3.amazonaws.com%2F41%2Ff2%2Fab365aa045e6b3f97d8c01da50cb%2F영문그림-녹내장안압렌즈.jpeg",
-},
-{
-  title: "Students Lead Vision Screening Drive",
-  date: "April 28, 2025",
-  category: "Social Activity",
-  summary: "NSS volunteers in Visakhapatnam trained to conduct basic vision tests for school children.",
-  image: "https://www.icarevision.com/wp-content/uploads/2020/09/Optometrist-Examining-Child.jpg",
-},
-{
-  title: "Low-Cost Eye Drop Shows Cataract Reversal Signs",
-  date: "April 25, 2025",
-  category: "Technology",
-  summary: "Clinical trials of an experimental eye drop hint at non-surgical treatment possibilities for early cataract.",
-  image: "https://dayaleyecentre.in/wp-content/uploads/2025/02/ucsf_eye_drops_istock-1170x694.jpg",
-},
-
-  ];
+    return () => {
+      Speech.stop();
+    };
+  }, [voiceEnabled]);
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <ScrollView contentContainerStyle={[indexStyles.container, { paddingBottom: 120 }]}>
-        {/* Header */}
-        <View style={indexStyles.header}>
-          {/* Back Button */}
-          <TouchableOpacity
-            style={{ position: 'absolute', left: 0, padding: 8, marginTop: -40 }}
-            onPress={() => router.push('./quiz')}>
-            <Ionicons name="arrow-back" size={24} color="#007AFF" />
-          </TouchableOpacity>
+    <View style={{ backgroundColor: colors.background, flex: 1 }}>
+      <ScrollView
+        contentContainerStyle={[
+          indexStyles.container,
+          {
+            alignItems: 'center',
+            paddingBottom: isTiny ? 104 : 120,
+            paddingHorizontal: screenPadding,
+            paddingTop: isTiny ? spacing.sm : spacing.md,
+          },
+        ]}
+      >
+        <View style={{ maxWidth: contentMaxWidth, width: '100%' }}>
+          <HomeHeader
+            isCompact={isCompact}
+            isLargePhone={isLargePhone}
+            isTiny={isTiny}
+            onToggleVoice={toggleVoice}
+            voiceEnabled={voiceEnabled}
+          />
 
-          {/* Title */}
-          <View style={{ flex: 1, alignItems: 'center' }}>
-            <Text style={indexStyles.title}>DRUSHTI </Text>
+          <PostsSection
+            isCompact={isCompact}
+            isLargePhone={isLargePhone}
+            isTiny={isTiny}
+            posts={EYE_CARE_POSTS}
+          />
+
+          <View style={indexStyles.footerContainer}>
+            <Text style={indexStyles.footerText}>Hackathon 2025 | Team Drushti</Text>
           </View>
         </View>
-
-           <View style={{ position: 'absolute', right: 0, padding: 8, marginTop: 20 }}>
-         <ThreeDot />
-        </View>
-
-        {/* Posts Section */}
-        <View style={{ marginTop: 24 }}>
-          <Text style={{ fontSize: 22, fontWeight: '700', marginBottom: 12, color: 'black',textAlign: 'center' }}>
-            Latest Posts & News
-          </Text>
-          {posts.map((post, i) => (
-            <Post
-              key={i}
-              title={post.title}
-              date={post.date}
-              category={post.category}
-              summary={post.summary}
-              image={post.image}
-            />
-          ))}
-        </View>
-<View style={indexStyles.footerContainer}>
-          <Text style={indexStyles.footerText}>Hackathon 2025 | Team Drushti</Text>
-        </View>
-
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
